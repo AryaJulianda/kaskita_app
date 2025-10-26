@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "995599594595",
+    "project_id": "kaskita-d2d2c",
+    "storage_bucket": "kaskita-d2d2c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:995599594595:android:3ae8871a9666bf6f1d7456",
+        "android_client_info": {
+          "package_name": "com.aryajulianda.kaskita_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "995599594595-15v4heb75puhh08jsnq4ce5qdq550hq6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.aryajulianda.kaskita_app",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "995599594595-ke3cuf8u24csv3mmlk7dluo4je3cik5i.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.aryajulianda.kaskita_app",
+            "certificate_hash": "03fc0c33dbd54f644e9b7d4d5e13c9bba45707ff"
+          }
+        },
+        {
+          "client_id": "995599594595-qnp3sv667bra8c78he8anaemfn1015oi.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAajN_T-t9fzkUYEiS--jIv3IXnCOLDCdo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "995599594595-qnp3sv667bra8c78he8anaemfn1015oi.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
