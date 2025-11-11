@@ -9,12 +9,15 @@ import {
   WalletIcon,
 } from "phosphor-react-native";
 import { Platform, StyleSheet, TouchableOpacity, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-export default function CustomTabs({
+export function CustomTabs({
   state,
   descriptors,
   navigation,
 }: BottomTabBarProps) {
+  const insets = useSafeAreaInsets();
+
   const tabbarIcons: any = {
     transaction: (isFocused: boolean) => {
       return (
@@ -63,7 +66,11 @@ export default function CustomTabs({
     },
   };
   return (
-    <View style={styles.tabbar}>
+    <View
+      style={{
+        ...styles.tabbar,
+      }}
+    >
       {state.routes.map((route, index) => {
         const { options } = descriptors[route.key];
         const label: any =

@@ -4,8 +4,10 @@ import Typo from "@/components/Typo";
 import { colors, radius, spacingX, spacingY } from "@/constants/theme";
 import { useAuthStore } from "@/stores/authStore";
 import { accountOptionType } from "@/types";
+import { getProfileImage } from "@/utils/getProfileImage";
 import { verticalScale } from "@/utils/styling";
-import { useRouter } from "expo-router";
+import { Image } from "expo-image";
+import { useFocusEffect, useRouter } from "expo-router";
 import {
   CaretRightIcon,
   FadersIcon,
@@ -15,7 +17,7 @@ import {
   PowerIcon,
   UserIcon,
 } from "phosphor-react-native";
-import React, { useEffect } from "react";
+import React, { useCallback } from "react";
 import { Alert, StyleSheet, TouchableOpacity, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 
@@ -23,9 +25,11 @@ const Profile = () => {
   const { logout, user, getProfile } = useAuthStore();
   const router = useRouter();
 
-  useEffect(() => {
-    getProfile();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      getProfile();
+    }, [getProfile])
+  );
 
   const showLogoutAlert = () => {
     Alert.alert("Confirm", "Are you sure you want to logout?", [
@@ -62,7 +66,7 @@ const Profile = () => {
     {
       title: "Group",
       icon: <HandshakeIcon size={26} color={colors.white} weight="fill" />,
-      routeName: "/profileModal",
+      routeName: "/invitePeople",
       bgColor: "#6366f1",
     },
     {
@@ -103,14 +107,14 @@ const Profile = () => {
         {/* user info */}
         <View style={styles.userInfo}>
           {/* avatar */}
-          {/* <View>
+          <View>
             <Image
               source={getProfileImage(user?.image)}
               style={styles.avatar}
               contentFit="cover"
               transition={100}
             />
-          </View> */}
+          </View>
 
           {/* name & email */}
           <View style={styles.nameContainer}>
@@ -119,9 +123,6 @@ const Profile = () => {
             </Typo>
             <Typo size={15} color={colors.neutral400}>
               {user?.email}
-            </Typo>
-            <Typo size={15} color={colors.neutral400}>
-              {user?.group_id}
             </Typo>
           </View>
         </View>

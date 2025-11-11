@@ -1,4 +1,4 @@
-import { colors, spacingY } from "@/constants/theme";
+import { colors } from "@/constants/theme";
 import { HeaderProps } from "@/types";
 import React from "react";
 import { StyleSheet, View } from "react-native";
@@ -33,7 +33,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flexDirection: "row",
     justifyContent: "space-between",
-    paddingHorizontal: spacingY._20,
+    // paddingHorizontal: spacingY._20,
   },
   button: {
     minWidth: 38,

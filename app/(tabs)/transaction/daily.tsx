@@ -115,7 +115,9 @@ const Daily = () => {
     >
       {/* Left */}
       <View style={{ height: "100%" }}>
-        <Typo fontWeight={600}>{item.category?.name || "-"}</Typo>
+        <Typo size={14} fontWeight={600}>
+          {item.category?.name || "-"}
+        </Typo>
         {item.note && <Typo size={13}>{item.note}</Typo>}
         {item.description && (
           <Typo size={13} color="gray">
@@ -126,6 +128,7 @@ const Daily = () => {
       {/* Right */}
       <View style={styles.cardRight}>
         <Typo
+          size={14}
           fontWeight={600}
           color={item.type === "INCOME" ? colors.green : colors.rose}
         >

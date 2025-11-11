@@ -134,6 +134,8 @@ export type UserType = {
 export type UserDataType = {
   name: string;
   image?: any;
+  prevImage?: string;
+  isUpdateImage: boolean;
 };
 
 export type AuthContextType = {

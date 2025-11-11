@@ -1,4 +1,8 @@
-import { CLOUDINARY_CLOUD_NAME, CLOUDINARY_UPLOAD_PRESET } from "@/constants";
+import {
+  CLOUDINARY_CLOUD_NAME,
+  CLOUDINARY_UPLOAD_PRESET,
+  SOURCE_PATH,
+} from "@/constants";
 import { ResponseType } from "@/types";
 import axios from "axios";
 
@@ -42,7 +46,7 @@ export const uploadToCloudinary = async (
 };
 
 export const getProfileImage = (file: any) => {
-  if (file && typeof file == "string") return file;
+  if (file && typeof file == "string") return SOURCE_PATH + file;
   if (file && typeof file == "object") return file.uri;
 
   return require("@/assets/images/defaultAvatar.png");

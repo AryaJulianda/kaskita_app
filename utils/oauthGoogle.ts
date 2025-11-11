@@ -6,7 +6,10 @@ import {
 import { Alert } from "react-native";
 
 type GoogleSignInOptions = {
-  onSuccess: (accessToken: string) => Promise<void>;
+  onSuccess: (
+    accessToken: string,
+    photoProfile?: string | null
+  ) => Promise<void>;
 };
 
 export const handleGoogleSignIn = async ({
@@ -23,14 +26,16 @@ export const handleGoogleSignIn = async ({
       showPlayServicesUpdateDialog: true,
     });
 
-    // const userInfo = await GoogleSignin.signIn();
+    const userInfo = await GoogleSignin.signIn();
+    const photoProfile = userInfo.data?.user.photo;
     // console.log("Google user info:", userInfo);
+    console.log("Google photo profile:", photoProfile);
 
     const tokens = await GoogleSignin.getTokens();
     console.log("Google tokens:", tokens);
 
     if (tokens.accessToken) {
-      await onSuccess(tokens.accessToken);
+      await onSuccess(tokens.accessToken, photoProfile);
     } else {
       Alert.alert("Error", "Failed to get access token");
     }

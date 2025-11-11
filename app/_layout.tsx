@@ -3,6 +3,7 @@ import { Stack } from "expo-router";
 import React, { useEffect } from "react";
 import { StyleSheet } from "react-native";
 
+import { colors } from "@/constants/theme";
 import {
   Poppins_100Thin,
   Poppins_200ExtraLight,
@@ -15,6 +16,7 @@ import {
   Poppins_900Black,
   useFonts,
 } from "@expo-google-fonts/poppins";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 export default function RootLayout() {
   const [fontsLoaded] = useFonts({
@@ -37,7 +39,11 @@ export default function RootLayout() {
 
   return (
     <VoiceRecorderProvider>
-      <Stack screenOptions={{ headerShown: false }} />
+      <SafeAreaProvider style={{ backgroundColor: colors.primary }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: colors.black }}>
+          <Stack screenOptions={{ headerShown: false }} />
+        </SafeAreaView>
+      </SafeAreaProvider>
     </VoiceRecorderProvider>
   );
 }

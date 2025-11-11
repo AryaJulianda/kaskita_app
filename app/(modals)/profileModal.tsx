@@ -6,6 +6,7 @@ import ModalWrapper from "@/components/ModalWrapper";
 import Typo from "@/components/Typo";
 import { colors, spacingX, spacingY } from "@/constants/theme";
 import { useAuthStore } from "@/stores/authStore";
+import { useImageStore } from "@/stores/imageStore";
 import { UserDataType } from "@/types";
 import { getProfileImage } from "@/utils/getProfileImage";
 import { scale, verticalScale } from "@/utils/styling";
@@ -23,39 +24,52 @@ import {
 } from "react-native";
 
 const ProfileModal = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  const { user } = useAuthStore();
+  const { updateProfile, isLoading, user, getProfile } = useAuthStore();
   const router = useRouter();
   const [userData, setUserData] = useState<UserDataType>({
     name: "",
     image: null,
+    prevImage: "",
+    isUpdateImage: false,
   });
+
+  const { deleteImage, uploadImage } = useImageStore();
 
   useEffect(() => {
     setUserData({
+      ...userData,
       name: user?.name || "",
       image: user?.image || null,
+      prevImage: user?.image,
     });
+    console.log(user);
   }, [user]);
 
   const onSubmit = async () => {
-    const { name, image } = userData;
+    const { name, image, isUpdateImage, prevImage } = userData;
 
     if (!name.trim()) {
       Alert.alert("Update Profile", "Please fill all the fields");
       return;
     }
 
-    setIsLoading(true);
-    const res = await updateUser(user?.uid as string, userData);
-    setIsLoading(false);
+    await updateProfile(name);
 
-    if (res.success) {
-      updateUserData(user?.uid as string);
-      router.back();
-    } else {
-      Alert.alert("User", res.msg);
+    if (isUpdateImage) {
+      const img = await uploadImage({
+        uri: image.uri,
+        table_name: "users",
+        table_id: user?.id as string,
+      });
+      console.log("RES UPLOAD IMG", img);
+
+      if (prevImage?.trim()) {
+        await deleteImage(prevImage);
+      }
     }
+
+    await getProfile();
+    router.back();
   };
 
   const onPickImage = async () => {
@@ -70,7 +84,11 @@ const ProfileModal = () => {
     console.log(result?.assets);
 
     if (!result.canceled) {
-      setUserData({ ...userData, image: result.assets[0] });
+      setUserData({
+        ...userData,
+        image: result.assets[0],
+        isUpdateImage: true,
+      });
     }
   };
   return (
