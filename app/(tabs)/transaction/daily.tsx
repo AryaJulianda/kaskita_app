@@ -116,7 +116,9 @@ const Daily = () => {
       {/* Left */}
       <View style={{ height: "100%" }}>
         <Typo size={14} fontWeight={600}>
-          {item.category?.name || "-"}
+          {item.category?.name ||
+            (item.type == "TRANSFER" && "Transfer") ||
+            "-"}
         </Typo>
         {item.note && <Typo size={13}>{item.note}</Typo>}
         {item.description && (
@@ -130,27 +132,24 @@ const Daily = () => {
         <Typo
           size={14}
           fontWeight={600}
-          color={item.type === "INCOME" ? colors.green : colors.rose}
+          color={
+            item.type === "INCOME"
+              ? colors.green
+              : item.type === "TRANSFER"
+              ? colors.blue
+              : colors.rose
+          }
         >
-          {item.type === "INCOME"
-            ? `+${new Intl.NumberFormat("id-ID", {
-                style: "currency",
-                currency: "IDR",
-                minimumFractionDigits: 2,
-              }).format(
-                typeof item.amount === "number"
-                  ? item.amount
-                  : parseFloat(item.amount) || 0
-              )}`
-            : `-${new Intl.NumberFormat("id-ID", {
-                style: "currency",
-                currency: "IDR",
-                minimumFractionDigits: 2,
-              }).format(
-                typeof item.amount === "number"
-                  ? item.amount
-                  : parseFloat(item.amount) || 0
-              )}`}
+          {item.type === "INCOME" ? "+" : item.type == "EXPENSES" ? "-" : ""}
+          {new Intl.NumberFormat("id-ID", {
+            style: "currency",
+            currency: "IDR",
+            minimumFractionDigits: 2,
+          }).format(
+            typeof item.amount === "number"
+              ? item.amount
+              : parseFloat(item.amount) || 0
+          )}
         </Typo>
         {item.asset && (
           <Typo size={13} color="black" fontWeight={"medium"}>

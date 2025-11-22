@@ -16,6 +16,10 @@ export const colors = {
   rose: "#ff3b3b",
   blue: "#04acba",
   green: "#16a34a",
+  purple: "#7c3aed", // utama — cerah tapi tidak bentrok
+  purpleLight: "#a78bfa", // untuk background / highlights
+  purpleDark: "#5b21b6", // untuk border / accent gelap
+  purpleAccent: "#f3e8ff", // very light untuk bg atau overlay
   neutral50: "#fafafa",
   neutral100: "#f5f5f5",
   neutral200: "#e5e5e5",

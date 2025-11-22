@@ -33,6 +33,8 @@ export type Transaction = {
 export type TransactionFormData = {
   id: string;
   type: "INCOME" | "EXPENSES" | "TRANSFER" | string | null;
+  reference_id?: string;
+  reference_type?: string;
   date: Date;
   time: Date;
   amount: string;
@@ -139,7 +141,7 @@ export const useTransactionStore = create<TransactionState>()(
         }).toString();
         try {
           const { data } = await api.get(`/api/transactions${`?${params}`}`);
-          console.log("group_id",)
+          console.log("group_id");
           console.log("transactions", data);
           set({
             transactions: data.data,

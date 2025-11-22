@@ -4,16 +4,20 @@ import Header from "@/components/Header";
 import ModalWrapper from "@/components/ModalWrapper";
 import { spacingY } from "@/constants/theme";
 import { useAssetStore } from "@/stores/assetStrore";
+import { useLoanStore } from "@/stores/loanStore";
+import { useSavingStore } from "@/stores/savingStore";
 import { useTransactionCategoryStore } from "@/stores/transactionCategoryStore";
 import { useTransactionStore } from "@/stores/transactionStore";
-import { useRouter } from "expo-router";
-import { useEffect } from "react";
+import { useFocusEffect, useRouter } from "expo-router";
+import { useCallback } from "react";
 
 const CreateTransaction = () => {
   const router = useRouter();
-  const { assets, isLoading: assetIsLoading } = useAssetStore();
+  const { assets, isLoading: assetIsLoading, getAssets } = useAssetStore();
   const { createTransaction, isLoading: transIsLoading } =
     useTransactionStore();
+  const { savings, isLoading: savingIsLoading, getSavings } = useSavingStore();
+  const { loans, isLoading: loanIsLoading, getLoans } = useLoanStore();
 
   const {
     transactionCategories,
@@ -21,9 +25,14 @@ const CreateTransaction = () => {
     isLoading: categoryIsLoading,
   } = useTransactionCategoryStore();
 
-  useEffect(() => {
-    getTransactionCategories();
-  }, [getTransactionCategories]);
+  useFocusEffect(
+    useCallback(() => {
+      getTransactionCategories();
+      getSavings();
+      getLoans();
+      getAssets();
+    }, [getTransactionCategories, getSavings, getLoans, getAssets])
+  );
 
   const handleSubmit = async (formData: FormData) => {
     console.log("form data:", formData);
@@ -41,7 +50,15 @@ const CreateTransaction = () => {
       <TransactionForm
         assets={assets}
         categories={transactionCategories}
-        loading={assetIsLoading || transIsLoading || categoryIsLoading}
+        savings={savings}
+        loans={loans}
+        loading={
+          assetIsLoading ||
+          transIsLoading ||
+          categoryIsLoading ||
+          savingIsLoading ||
+          loanIsLoading
+        }
         submitLabel="Create Transaction"
         onSubmit={handleSubmit}
       />

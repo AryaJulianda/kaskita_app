@@ -61,7 +61,7 @@ export type HeaderProps = {
 export type BackButtonProps = {
   style?: ViewStyle;
   iconSize?: number;
-  path?: string;
+  path?: any;
 };
 
 export type TransactionType = {

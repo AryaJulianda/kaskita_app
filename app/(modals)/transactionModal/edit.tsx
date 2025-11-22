@@ -6,15 +6,17 @@ import ModalWrapper from "@/components/ModalWrapper";
 import { SOURCE_PATH } from "@/constants";
 import { spacingY } from "@/constants/theme";
 import { useAssetStore } from "@/stores/assetStrore";
+import { useLoanStore } from "@/stores/loanStore";
+import { useSavingStore } from "@/stores/savingStore";
 import { useTransactionCategoryStore } from "@/stores/transactionCategoryStore";
 import { useTransactionStore } from "@/stores/transactionStore";
-import { useRouter } from "expo-router";
-import { useEffect } from "react";
+import { useFocusEffect, useRouter } from "expo-router";
+import { useCallback } from "react";
 import { Alert } from "react-native";
 
 const EditTransaction = () => {
   const router = useRouter();
-  const { assets, isLoading: assetIsLoading } = useAssetStore();
+  const { assets, isLoading: assetIsLoading, getAssets } = useAssetStore();
   const {
     editTransaction,
     isLoading: transIsLoading,
@@ -22,15 +24,23 @@ const EditTransaction = () => {
     deleteTransaction,
   } = useTransactionStore();
 
+  const { savings, isLoading: savingIsLoading, getSavings } = useSavingStore();
+  const { loans, isLoading: loanIsLoading, getLoans } = useLoanStore();
+
   const {
     transactionCategories,
     getTransactionCategories,
     isLoading: categoryIsLoading,
   } = useTransactionCategoryStore();
 
-  useEffect(() => {
-    getTransactionCategories();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      getTransactionCategories();
+      getSavings();
+      getLoans();
+      getAssets();
+    }, [getTransactionCategories, getSavings, getLoans, getAssets])
+  );
 
   const handleSubmit = async (formData: FormData) => {
     console.log("form data", formData);
@@ -86,7 +96,15 @@ const EditTransaction = () => {
         }}
         assets={assets}
         categories={transactionCategories}
-        loading={assetIsLoading || transIsLoading || categoryIsLoading}
+        savings={savings}
+        loans={loans}
+        loading={
+          assetIsLoading ||
+          transIsLoading ||
+          categoryIsLoading ||
+          savingIsLoading ||
+          loanIsLoading
+        }
         submitLabel="Edit Transaction"
         onSubmit={handleSubmit}
       />

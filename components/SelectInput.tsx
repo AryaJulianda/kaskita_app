@@ -13,13 +13,13 @@ export const SelectInput = ({
   onSelect,
   editButton,
 }: {
-  label: string;
+  label?: string;
   labelModal: string;
   value?: string;
   placeholder?: string;
   listItems: any[];
   onSelect: (item: any) => void;
-  editButton?: any; 
+  editButton?: any;
 }) => {
   const [visible, setVisible] = useState(false);
 
@@ -30,9 +30,11 @@ export const SelectInput = ({
 
   return (
     <View style={styles.inputContainer}>
-      <Typo color={colors.neutral500} fontWeight={"medium"}>
-        {label}
-      </Typo>
+      {label && (
+        <Typo color={colors.neutral500} fontWeight={"medium"}>
+          {label}
+        </Typo>
+      )}
 
       <TouchableOpacity
         style={styles.inputBox}

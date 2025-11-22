@@ -69,11 +69,6 @@ const ai = () => {
                 style={isRecording && { opacity: 0.5 }}
               />
             )}
-            <MicrophoneIcon
-              size={28}
-              color="white"
-              style={isRecording && { opacity: 0.5 }}
-            />
           </TouchableOpacity>
         </>
       )}

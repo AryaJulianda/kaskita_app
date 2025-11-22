@@ -24,6 +24,8 @@ type TransactionFormProps = {
   initialData?: Partial<TransactionFormData>;
   assets: any[];
   categories: any[];
+  savings: any[];
+  loans: any[];
   loading?: boolean;
   submitLabel?: string;
   onSubmit: (formData: FormData) => void;
@@ -33,6 +35,8 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
   initialData,
   assets,
   categories,
+  savings,
+  loans,
   loading,
   submitLabel = "Save Transaction",
   onSubmit,
@@ -41,6 +45,8 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
   const [form, setForm] = useState<TransactionFormData>({
     id: "",
     type: "EXPENSES",
+    reference_id: "",
+    reference_type: "IN",
     date: new Date(),
     time: new Date(),
     amount: "",
@@ -111,7 +117,10 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
       !form.date ||
       !form.amount ||
       !form.asset_id ||
-      (!form.category_id && form.type !== "TRANSFER")
+      (!form.category_id &&
+        form.type !== "TRANSFER" &&
+        form.type !== "SAVING" &&
+        form.type !== "LOAN")
     ) {
       return Alert.alert("Validation", "Semua field wajib diisi.");
     }
@@ -139,6 +148,9 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
     if (form.image_uri) {
       payload.append("image_uri", form.image_uri);
     }
+    if (form.reference_id) payload.append("reference_id", form.reference_id);
+    if (form.reference_type)
+      payload.append("reference_type", form.reference_type);
 
     onSubmit(payload);
   };
@@ -156,14 +168,17 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
             Type
           </Typo>
           <View style={styles.typeContainer}>
-            {["INCOME", "EXPENSES", "TRANSFER"].map((t) => (
+            {["INCOME", "EXPENSES", "TRANSFER", "SAVING", "LOAN"].map((t) => (
               <TouchableOpacity
                 disabled={form.id != ""}
                 key={t}
                 onPress={() => setForm({ ...form, type: t })}
                 style={[
                   styles.typeButton,
-                  form.type === t && { borderColor: getTypeColor(t) },
+                  form.type === t && {
+                    borderColor: getTypeColor(t),
+                    backgroundColor: "white",
+                  },
                 ]}
               >
                 <Typo
@@ -177,6 +192,103 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
             ))}
           </View>
         </View>
+        {(form.type == "SAVING" || form.type == "LOAN") && (
+          <>
+            {form.type == "SAVING" ? (
+              <>
+                <View style={styles.inputContainer}>
+                  <Typo
+                    color={colors.neutral500}
+                    fontWeight={"medium"}
+                    style={{ textTransform: "capitalize" }}
+                  >
+                    Type {form.type.toLocaleLowerCase()}
+                  </Typo>
+                  <View style={styles.typeContainer}>
+                    {["IN", "OUT"].map((t) => (
+                      <TouchableOpacity
+                        disabled={form.id != ""}
+                        key={t}
+                        onPress={() => setForm({ ...form, reference_type: t })}
+                        style={[
+                          styles.typeButton,
+                          { flex: 1 },
+                          form.reference_type === t && {
+                            borderColor: colors.neutral900,
+                            backgroundColor: "white",
+                          },
+                        ]}
+                      >
+                        <Typo
+                          size={15}
+                          style={{ textAlign: "center" }}
+                          fontWeight={"semibold"}
+                        >
+                          {t}
+                        </Typo>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                </View>
+
+                <SelectInput
+                  label="Saving"
+                  labelModal="Savings"
+                  placeholder="Select Saving"
+                  value={
+                    savings.find((c) => c.id === form.reference_id)?.name || ""
+                  }
+                  listItems={savings}
+                  onSelect={(cat) => setForm({ ...form, reference_id: cat.id })}
+                  editButton={
+                    <EditButton
+                      onPress={() => router.push("/savingModal/edit")}
+                    />
+                  }
+                />
+              </>
+            ) : (
+              <>
+                <SelectInput
+                  label="Loan"
+                  labelModal="Loans"
+                  placeholder="Select Loan"
+                  value={
+                    loans.find((c) => c.id === form.reference_id)?.name || ""
+                  }
+                  listItems={loans}
+                  onSelect={(cat) => setForm({ ...form, reference_id: cat.id })}
+                  editButton={
+                    <EditButton
+                      onPress={() => router.push("/loanModal/edit")}
+                    />
+                  }
+                />
+              </>
+            )}
+
+            {/* <View
+              style={{
+                marginVertical: -10,
+                justifyContent: "center",
+                flexDirection: "row",
+                alignItems: "center",
+              }}
+            >
+              <ArrowDownIcon color={colors.neutral400} />
+            </View> */}
+
+            <SelectInput
+              label="Asset"
+              labelModal="Assets"
+              placeholder="Select Asset"
+              value={assets.find((a) => a.id === form.asset_id)?.name || ""}
+              listItems={assets}
+              onSelect={(ass) => setForm({ ...form, asset_id: ass.id })}
+              editButton={<EditButton onPress={() => router.push("/asset")} />}
+            />
+          </>
+        )}
 
         {/* Date & Time */}
         <View style={[styles.inputContainer, styles.rowBetween]}>
@@ -269,7 +381,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
               onChangeText={handleAddCostChange}
             />
           </>
-        ) : (
+        ) : form.type != "SAVING" && form.type != "LOAN" ? (
           <>
             <SelectInput
               label="Category"
@@ -294,6 +406,8 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
               editButton={<EditButton onPress={() => router.push("/asset")} />}
             />
           </>
+        ) : (
+          <></>
         )}
 
         <InputField
@@ -341,6 +455,10 @@ const getTypeColor = (type: string) => {
       return colors.rose;
     case "TRANSFER":
       return colors.blue;
+    case "SAVING":
+      return colors.green;
+    case "LOAN":
+      return colors.purpleLight;
     default:
       return "transparent";
   }
@@ -363,18 +481,23 @@ const styles = StyleSheet.create({
   },
   typeContainer: {
     flexDirection: "row",
-    justifyContent: "space-around",
+    flexWrap: "wrap", // enable wrapping to next row
+    justifyContent: "flex-start",
     borderWidth: 1,
     borderColor: colors.neutral200,
-    borderRadius: 100,
+    borderRadius: 30,
     padding: 5,
   },
   typeButton: {
-    flex: 1,
+    // flex: 1,
     borderRadius: 100,
-    paddingVertical: 5,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
     borderWidth: 1,
     borderColor: "transparent",
+    margin: 6, // spacing between buttons and allow wrap
+    alignItems: "center",
+    backgroundColor: colors.neutral100,
   },
   rowBetween: { flexDirection: "row", justifyContent: "space-between" },
   footer: {

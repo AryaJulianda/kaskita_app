@@ -1,6 +1,6 @@
 import { AssetFormData } from "@/components/Form/AssetForm";
 import { api } from "@/utils/api";
-import * as FileSystem from "expo-file-system/legacy"; // ✅ gunakan modul legacy
+import * as FileSystem from "expo-file-system/legacy";
 import { Alert } from "react-native";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
