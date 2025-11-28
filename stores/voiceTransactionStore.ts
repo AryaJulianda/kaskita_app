@@ -34,11 +34,13 @@ export const useVoiceTransactionStore = create<VoiceTransactionState>(
           type: voiceFile.type,
         } as any);
 
-        console.log(formData.get("voice"));
+        const start = Date.now();
 
         await api.post("/api/transactions/create-by-voice", formData, {
           headers: { "Content-Type": "multipart/form-data" },
         });
+        const end = Date.now();
+        console.log(`CREATE TRANSACTION BY AI: ${end - start} ms`);
 
         Alert.alert("Success", "Transaksi berhasil ditambahkan via suara ✅");
         router.push("/transaction/daily");

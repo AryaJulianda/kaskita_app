@@ -12,7 +12,14 @@ const fileUri = FileSystem.documentDirectory + "transactions-storage.json";
 
 export type Transaction = {
   id: string;
-  type: "EXPENSES" | "INCOME" | "TRANSFER" | "ADJUSTMENT" | null;
+  type:
+    | "EXPENSES"
+    | "INCOME"
+    | "TRANSFER"
+    | "ADJUSTMENT"
+    | "LOAN"
+    | "SAVING"
+    | null;
   date: any;
   amount: number;
   category_id: string;
@@ -28,11 +35,13 @@ export type Transaction = {
   created_at: string;
   updated_at: string;
   category: TransactionCategory;
+  ref_saving: Saving | null;
+  ref_loan: Loan | null;
 };
 
 export type TransactionFormData = {
   id: string;
-  type: "INCOME" | "EXPENSES" | "TRANSFER" | string | null;
+  type: "INCOME" | "EXPENSES" | "TRANSFER" | "LOAN" | "SAVING" | string | null;
   reference_id?: string;
   reference_type?: string;
   date: Date;
@@ -73,6 +82,32 @@ export type TransactionState = {
   deleteTransaction: (id: string) => Promise<void>;
 };
 
+export interface Saving {
+  id: string;
+  name: string;
+  target_amount: number;
+  current_amount: number;
+  due_date?: string | null;
+  created_by: string;
+  updated_by?: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Loan {
+  id: string;
+  name: string;
+  lender_name?: string | null;
+  principal: number;
+  remaining_balance: number;
+  interest_rate?: number | null;
+  due_date?: string | null;
+  created_by: string;
+  updated_by?: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 // ===== Store Implementation =====
 export const useTransactionStore = create<TransactionState>()(
   persist(
@@ -109,6 +144,8 @@ export const useTransactionStore = create<TransactionState>()(
           created_at: "",
           updated_at: "",
         },
+        ref_saving: null,
+        ref_loan: null,
       },
       detailTransactionCategory: {
         id: "",
@@ -140,15 +177,14 @@ export const useTransactionStore = create<TransactionState>()(
           year: year,
         }).toString();
         try {
+          const start = Date.now(); // mulai
           const { data } = await api.get(`/api/transactions${`?${params}`}`);
-          console.log("group_id");
-          console.log("transactions", data);
+          const end = Date.now(); // selesai
+          console.log("GET TRANSACTION RESPONSE TIME:", end - start, "ms");
           set({
             transactions: data.data,
             isLoading: false,
           });
-
-          // console.log("✅ Transactions:", data.data);
         } catch (err: any) {
           set({ isLoading: false });
           console.log(
@@ -180,8 +216,6 @@ export const useTransactionStore = create<TransactionState>()(
               table_name: "transactions",
               table_id: data.data.id,
             });
-
-            console.log("RES UPLOAD IMG", img);
           }
 
           set((state) => ({
@@ -224,7 +258,7 @@ export const useTransactionStore = create<TransactionState>()(
               table_id: data.data.id,
             });
 
-            console.log("RES UPLOAD IMG", img);
+            // console.log("RES UPLOAD IMG", img);
           }
 
           set({

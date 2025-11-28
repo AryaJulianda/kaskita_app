@@ -101,57 +101,143 @@ const Asset = () => {
     </TouchableOpacity>
   );
 
-  const RenderSavingItem = ({ item }: { item: Saving }) => (
-    <TouchableOpacity
-      style={styles.card}
-      onPress={() => {
-        router.push(`/savingModal/edit`);
-        setDetailSaving(item);
-      }}
-    >
-      <Typo size={14}>{item.name}</Typo>
-      <Typo size={14}>
-        {new Intl.NumberFormat("id-ID", {
-          style: "currency",
-          currency: "IDR",
-          minimumFractionDigits: 2,
-        }).format(item.current_amount)}
-      </Typo>
-      <Typo size={14}>
-        {new Intl.NumberFormat("id-ID", {
-          style: "currency",
-          currency: "IDR",
-          minimumFractionDigits: 2,
-        }).format(item.target_amount)}
-      </Typo>
-    </TouchableOpacity>
-  );
+  const RenderSavingItem = ({ item }: { item: Saving }) => {
+    const percent =
+      item.current_amount === 0
+        ? 0
+        : Math.min(
+            100,
+            Math.round((item.current_amount / item.target_amount) * 100)
+          );
+    return (
+      <TouchableOpacity
+        style={styles.card}
+        onPress={() => {
+          router.push(`/savingModal/edit`);
+          setDetailSaving(item);
+        }}
+      >
+        <Typo size={14}>{item.name}</Typo>
+        <View style={styles.row}>
+          <View style={styles.progressBarContainer}>
+            <View
+              style={[
+                styles.progressBar,
+                { width: `${percent}%`, backgroundColor: colors.primary },
+              ]}
+            />
+            <View
+              style={[
+                styles.progressBar,
+                { flex: 1, backgroundColor: colors.neutral200 },
+              ]}
+            />
+          </View>
 
-  const RenderLoanItem = ({ item }: { item: Loan }) => (
-    <TouchableOpacity
-      style={styles.card}
-      onPress={() => {
-        router.push(`/loanModal/edit`);
-        setDetailLoan(item);
-      }}
-    >
-      <Typo size={14}>{item.name}</Typo>
-      <Typo size={14}>
-        {new Intl.NumberFormat("id-ID", {
-          style: "currency",
-          currency: "IDR",
-          minimumFractionDigits: 2,
-        }).format(item.principal)}
-      </Typo>
-      <Typo size={14}>
-        {new Intl.NumberFormat("id-ID", {
-          style: "currency",
-          currency: "IDR",
-          minimumFractionDigits: 2,
-        }).format(item.remaining_balance)}
-      </Typo>
-    </TouchableOpacity>
-  );
+          <Typo size={12} color={colors.neutral700}>
+            {percent}%
+          </Typo>
+        </View>
+        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+          <View style={{ flex: 1 }}>
+            <Typo size={13} fontWeight={500} color={colors.neutral500}>
+              Current Amount
+            </Typo>
+            <Typo size={13} fontWeight={600} color={colors.primary}>
+              {new Intl.NumberFormat("id-ID", {
+                style: "currency",
+                currency: "IDR",
+              }).format(item.current_amount)}
+            </Typo>
+          </View>
+          <View
+            style={{
+              flex: 1,
+              alignItems: "flex-end",
+            }}
+          >
+            <Typo size={13} fontWeight={500} color={colors.neutral500}>
+              Target Amount
+            </Typo>
+            <Typo size={13} fontWeight={600} color={colors.green}>
+              {new Intl.NumberFormat("id-ID", {
+                style: "currency",
+                currency: "IDR",
+              }).format(item.target_amount)}
+            </Typo>
+          </View>
+        </View>
+      </TouchableOpacity>
+    );
+  };
+
+  const RenderLoanItem = ({ item }: { item: Loan }) => {
+    const paidAmount = item.principal - item.remaining_balance;
+    const percent =
+      paidAmount === 0
+        ? 0
+        : Math.min(100, Math.round((paidAmount / item.principal) * 100));
+    return (
+      <TouchableOpacity
+        style={styles.card}
+        onPress={() => {
+          router.push(`/loanModal/edit`);
+          setDetailLoan(item);
+        }}
+      >
+        <Typo size={14}>{item.name}</Typo>
+        <View style={styles.row}>
+          <View style={styles.progressBarContainer}>
+            <View
+              style={[
+                styles.progressBar,
+                { width: `${percent}%`, backgroundColor: colors.primary },
+              ]}
+            />
+            <View
+              style={[
+                styles.progressBar,
+                { flex: 1, backgroundColor: colors.neutral200 },
+              ]}
+            />
+          </View>
+
+          <Typo size={12} color={colors.neutral700}>
+            {percent}%
+          </Typo>
+        </View>
+        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+          <View style={{ flex: 1 }}>
+            <Typo size={13} fontWeight={500} color={colors.neutral500}>
+              Paid Amount
+            </Typo>
+            <Typo size={13} fontWeight={600} color={colors.primary}>
+              {new Intl.NumberFormat("id-ID", {
+                style: "currency",
+                currency: "IDR",
+              }).format(paidAmount)}
+            </Typo>
+          </View>
+          <View
+            style={{
+              flex: 1,
+              alignItems: "flex-end",
+            }}
+          >
+            <Typo size={13} fontWeight={500} color={colors.neutral500}>
+              Principal
+            </Typo>
+            <Typo size={13} fontWeight={600} color={colors.green}>
+              {new Intl.NumberFormat("id-ID", {
+                style: "currency",
+                currency: "IDR",
+              }).format(item.principal)}
+            </Typo>
+          </View>
+        </View>
+      </TouchableOpacity>
+    );
+  };
 
   return (
     <ScreenWrapper>
@@ -265,41 +351,44 @@ const Asset = () => {
                         : "Belum ada Pinjaman"}
                     </Typo>
                   }
+                  ListFooterComponent={
+                    <TouchableOpacity
+                      onPress={() => {
+                        switch (activeType) {
+                          case "ASSETS":
+                            router.push("/assetModal");
+                            break;
+
+                          case "SAVINGS":
+                            router.push("/savingModal");
+                            break;
+
+                          case "LOANS":
+                            router.push("/loanModal");
+                            break;
+
+                          default:
+                            break;
+                        }
+                      }}
+                      style={{
+                        flexDirection: "row",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        backgroundColor: colors.primary,
+                        width: 150,
+                        borderRadius: 100,
+                        gap: 10,
+                        marginHorizontal: "auto",
+                        marginTop: 10,
+                        marginBottom: 30,
+                      }}
+                    >
+                      <Typo color="white">Tambah</Typo>
+                      <PlusIcon color={colors.white} size={verticalScale(25)} />
+                    </TouchableOpacity>
+                  }
                 />
-                <TouchableOpacity
-                  onPress={() => {
-                    switch (activeType) {
-                      case "ASSETS":
-                        router.push("/assetModal");
-                        break;
-
-                      case "SAVINGS":
-                        router.push("/savingModal");
-                        break;
-
-                      case "LOANS":
-                        router.push("/loanModal");
-                        break;
-
-                      default:
-                        break;
-                    }
-                  }}
-                  style={{
-                    flexDirection: "row",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    backgroundColor: colors.primary,
-                    width: 150,
-                    borderRadius: 100,
-                    gap: 10,
-                    marginHorizontal: "auto",
-                    marginTop: 10,
-                  }}
-                >
-                  <Typo color="white">Tambah</Typo>
-                  <PlusIcon color={colors.white} size={verticalScale(25)} />
-                </TouchableOpacity>
               </View>
             </View>
           </>
@@ -363,5 +452,23 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingVertical: 5,
     borderWidth: 2,
+  },
+  progressBarContainer: {
+    width: "90%",
+    flexDirection: "row",
+    height: 8,
+    borderRadius: 4,
+    overflow: "hidden",
+    marginVertical: 6,
+    backgroundColor: colors.neutral200,
+  },
+  progressBar: {
+    height: 8,
+    borderRadius: 4,
+  },
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
 });

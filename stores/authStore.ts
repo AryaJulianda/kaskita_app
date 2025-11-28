@@ -105,7 +105,6 @@ export const useAuthStore = create<AuthState>()(
       groupDetail: null,
 
       registerUser: async (name, email, password) => {
-        console.log("api register run");
         set({ isLoading: true });
         try {
           const { data } = await api.post("/api/register", {
@@ -191,7 +190,6 @@ export const useAuthStore = create<AuthState>()(
       },
 
       loginUser: async (email, password) => {
-        console.log("api login run");
         set({ isLoading: true });
         try {
           const { data } = await axios.post(KASKITA_BACKEND + "/api/login", {
@@ -219,7 +217,6 @@ export const useAuthStore = create<AuthState>()(
       },
 
       getProfile: async () => {
-        console.log("api profile run");
         try {
           const token = get().token;
           if (!token) throw new Error("No token available");

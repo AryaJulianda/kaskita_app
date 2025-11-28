@@ -10,7 +10,7 @@ import { TransactionFormData } from "@/stores/transactionStore";
 import { scale } from "@/utils/styling";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useRouter } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Alert,
   ScrollView,
@@ -59,10 +59,6 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
     image_uri: "",
     ...initialData,
   });
-
-  useEffect(() => {
-    console.log(form);
-  }, [form]);
 
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
@@ -134,8 +130,8 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
       "amount",
       String(parseInt(form.amount.replace(/\./g, ""), 10))
     );
-    payload.append("category_id", form.category_id);
     payload.append("asset_id", form.asset_id);
+    if (form.category_id) payload.append("category_id", form.category_id);
     if (form.note) payload.append("note", form.note);
     if (form.description) payload.append("description", form.description);
     if (form.transfer_asset_id)

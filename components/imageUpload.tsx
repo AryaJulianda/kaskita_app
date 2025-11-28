@@ -25,10 +25,10 @@ const ImageUpload = ({
       quality: 0.5,
     });
 
-    console.log(result?.assets);
+    // console.log(result?.assets);
 
     if (!result.canceled) {
-      onSelect(result.assets[0])
+      onSelect(result.assets[0]);
     }
   };
 
@@ -87,13 +87,13 @@ const styles = StyleSheet.create({
     borderCurve: "continuous",
     overflow: "hidden",
   },
-  deleteIcon : {
-    position: 'absolute',
+  deleteIcon: {
+    position: "absolute",
     top: scale(6),
     right: scale(6),
     shadowColor: colors.black,
-    shadowOffset: {width: 0, height: 5},
+    shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 1,
-    shadowRadius: 10
-  }
+    shadowRadius: 10,
+  },
 });

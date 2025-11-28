@@ -61,7 +61,7 @@ const Daily = () => {
   const expense = useMemo(
     () =>
       transactions
-        .filter((tx) => tx.type === "EXPENSES")
+        .filter((tx) => tx.type === "EXPENSES" || tx.type === "LOAN")
         .reduce(
           (sum, tx) =>
             sum +
@@ -118,6 +118,11 @@ const Daily = () => {
         <Typo size={14} fontWeight={600}>
           {item.category?.name ||
             (item.type == "TRANSFER" && "Transfer") ||
+            (item.type == "SAVING" &&
+              (item.reference_type == "IN"
+                ? `Menabung - ${item.ref_saving?.name}`
+                : `Tarik Tabungan - ${item.ref_saving?.name}`)) ||
+            (item.type == "LOAN" && `Cicilan - ${item.ref_loan?.name}`) ||
             "-"}
         </Typo>
         {item.note && <Typo size={13}>{item.note}</Typo>}
@@ -134,13 +139,19 @@ const Daily = () => {
           fontWeight={600}
           color={
             item.type === "INCOME"
-              ? colors.green
+              ? colors.primary
               : item.type === "TRANSFER"
               ? colors.blue
+              : item.type === "SAVING"
+              ? colors.green
               : colors.rose
           }
         >
-          {item.type === "INCOME" ? "+" : item.type == "EXPENSES" ? "-" : ""}
+          {item.type === "INCOME"
+            ? "+"
+            : item.type == "EXPENSES" || item.type == "LOAN"
+            ? "-"
+            : ""}
           {new Intl.NumberFormat("id-ID", {
             style: "currency",
             currency: "IDR",
@@ -194,7 +205,7 @@ const Daily = () => {
         <>
           {/* Summary Row */}
           <View style={styles.summaryRow}>
-            <SummaryItem label="Income" value={income} color={colors.green} />
+            <SummaryItem label="Income" value={income} color={colors.primary} />
             <SummaryItem label="Expenses" value={expense} color={colors.rose} />
             <SummaryItem label="Total" value={total} color={colors.skyblue} />
           </View>

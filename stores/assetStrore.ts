@@ -90,15 +90,16 @@ export const useAssetStore = create<AssetState>()(
       },
 
       getAssets: async () => {
-        console.log("api get assets run");
         set({ isLoading: true });
         try {
+          const start = Date.now();
           const { data } = await api.get("/api/assets");
           set({
             assets: data.data,
             isLoading: false,
           });
-          console.log("GET ASSET SUCCESS");
+          const end = Date.now();
+          console.log(`GET ASSETS TIME: ${end - start} ms`);
         } catch (err: any) {
           set({ isLoading: false });
           console.log("Get Assets Error:", err.response?.data || err.message);
@@ -120,7 +121,6 @@ export const useAssetStore = create<AssetState>()(
       },
 
       getAssetCategories: async () => {
-        console.log("api get asset categories run");
         try {
           const { data } = await api.get("/api/asset-categories");
           set({
@@ -135,7 +135,6 @@ export const useAssetStore = create<AssetState>()(
       },
 
       createAsset: async (payload) => {
-        console.log("api create asset run");
         set({ isLoading: true });
         try {
           const { data } = await api.post("/api/assets", payload);
@@ -151,7 +150,6 @@ export const useAssetStore = create<AssetState>()(
       },
 
       editAsset: async (payload) => {
-        console.log("api edit asset run");
         set({ isLoading: true });
         try {
           const { data } = await api.put(`/api/assets/${payload.id}`, payload);

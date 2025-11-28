@@ -113,6 +113,7 @@ export function CustomTabs({
             style={[
               styles.tabbarItem,
               route.name == "ai" && {
+                flex: 0,
                 backgroundColor: "white",
                 top: -20,
                 width: 60,
@@ -145,5 +146,6 @@ const styles = StyleSheet.create({
     marginBottom: Platform.OS == "ios" ? spacingY._10 : spacingY._5,
     justifyContent: "center",
     alignItems: "center",
+    flex: 1,
   },
 });

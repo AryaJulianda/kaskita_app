@@ -35,7 +35,7 @@ const CreateTransaction = () => {
   );
 
   const handleSubmit = async (formData: FormData) => {
-    console.log("form data:", formData);
+    // console.log("form data:", formData);
     await createTransaction(formData);
     router.push("/transaction/daily");
   };

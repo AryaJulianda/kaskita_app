@@ -70,15 +70,16 @@ export const useLoanStore = create<LoanState>()(
       },
 
       getLoans: async () => {
-        console.log("api get loans run");
         set({ isLoading: true });
         try {
+          const start = Date.now();
           const { data } = await api.get("/api/loans");
           set({
             loans: data.data,
             isLoading: false,
           });
-          console.log("GET LOANS SUCCESS");
+          const end = Date.now();
+          console.log(`GET LOANS TIME: ${end - start} ms`);
         } catch (err: any) {
           set({ isLoading: false });
           console.log("Get Loans Error:", err.response?.data || err.message);
@@ -104,7 +105,6 @@ export const useLoanStore = create<LoanState>()(
       },
 
       createLoan: async (payload) => {
-        console.log("api create loan run");
         set({ isLoading: true });
         try {
           const { data } = await api.post("/api/loans", payload);
@@ -120,7 +120,6 @@ export const useLoanStore = create<LoanState>()(
       },
 
       editLoan: async (payload) => {
-        console.log("api edit loan run");
         set({ isLoading: true });
         try {
           const { data } = await api.put(`/api/loans/${payload.id}`, payload);

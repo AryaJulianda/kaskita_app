@@ -43,7 +43,7 @@ const EditTransaction = () => {
   );
 
   const handleSubmit = async (formData: FormData) => {
-    console.log("form data", formData);
+    // console.log("form data", formData);
 
     await editTransaction(formData);
     router.push("/transaction/daily");

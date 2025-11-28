@@ -70,15 +70,16 @@ export const useSavingStore = create<SavingState>()(
       },
 
       getSavings: async () => {
-        console.log("api get savings run");
         set({ isLoading: true });
         try {
+          const start = Date.now();
           const { data } = await api.get("/api/savings");
           set({
             savings: data.data,
             isLoading: false,
           });
-          console.log("GET SAVINGS SUCCESS");
+          const end = Date.now();
+          console.log(`GET SAVINGS TIME: ${end - start} ms`);
         } catch (err: any) {
           set({ isLoading: false });
           console.log("Get Savings Error:", err.response?.data || err.message);
@@ -103,7 +104,6 @@ export const useSavingStore = create<SavingState>()(
       },
 
       createSaving: async (payload) => {
-        console.log("api create saving run");
         set({ isLoading: true });
         try {
           const { data } = await api.post("/api/savings", payload);
@@ -122,7 +122,6 @@ export const useSavingStore = create<SavingState>()(
       },
 
       editSaving: async (payload) => {
-        console.log("api edit saving run");
         set({ isLoading: true });
         try {
           const { data } = await api.put(`/api/savings/${payload.id}`, payload);

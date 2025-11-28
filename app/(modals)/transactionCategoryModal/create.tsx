@@ -20,7 +20,7 @@ const CreateTransactionCategory = () => {
   }, [getTransactionCategories]);
 
   const handleSubmit = async (formData: TransactionCategoryFormData) => {
-    console.log("form data:", formData);
+    // console.log("form data:", formData);
     await createTransactionCategory(formData);
     router.push("/transactionCategoryModal");
   };

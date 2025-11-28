@@ -4,7 +4,7 @@ import Typo from "@/components/Typo";
 import { colors, spacingY } from "@/constants/theme";
 import { TransactionCategoryFormData } from "@/stores/transactionStore";
 import { scale } from "@/utils/styling";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Alert,
   ScrollView,
@@ -33,10 +33,6 @@ const TransactionCategoryForm: React.FC<TransactionCategoryProps> = ({
     base_budget: "",
     ...initialData,
   });
-
-  useEffect(() => {
-    console.log(form);
-  }, [form]);
 
   const handleBudgetChange = (value: string) => {
     const raw = value.replace(/\D/g, "");

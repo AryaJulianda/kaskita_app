@@ -42,16 +42,17 @@ export const useBudgetingStore = create<BudgetingState>()(
           year: year,
         }).toString();
         try {
+          const start = Date.now();
           const { data } = await api.get(
             `/api/transaction-categories/budget-spent${`?${params}`}`
           );
-
-          // console.log("✅ Category Budgets:", request, data.data);
 
           set({
             categoryBudgets: data.data,
             isLoading: false,
           });
+          const end = Date.now();
+          console.log(`GET CATEGORY BUDGET TIME: ${end - start} ms`);
         } catch (err: any) {
           set({ isLoading: false });
           console.log(

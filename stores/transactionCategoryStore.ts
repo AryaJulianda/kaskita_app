@@ -108,14 +108,15 @@ export const useTransactionCategoryStore = create<TransactionCategoryState>()(
       getTransactionCategories: async () => {
         set({ isLoading: true });
         try {
+          const start = Date.now();
           const { data } = await api.get("/api/transaction-categories");
 
           set({
             transactionCategories: data.data,
             isLoading: false,
           });
-
-          // console.log("✅ Categories:", data.data);
+          const end = Date.now();
+          console.log(`GET TRANSACTION CATEGORY TIME: ${end - start} ms`);
         } catch (err: any) {
           set({ isLoading: false });
           console.log(

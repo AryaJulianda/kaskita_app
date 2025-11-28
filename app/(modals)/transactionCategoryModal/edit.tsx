@@ -4,7 +4,10 @@ import TransactionCategoryForm from "@/components/Form/TransactionCategoryForm";
 import Header from "@/components/Header";
 import ModalWrapper from "@/components/ModalWrapper";
 import { spacingY } from "@/constants/theme";
-import { TransactionCategoryFormData, useTransactionCategoryStore } from "@/stores/transactionCategoryStore";
+import {
+  TransactionCategoryFormData,
+  useTransactionCategoryStore,
+} from "@/stores/transactionCategoryStore";
 import { useRouter } from "expo-router";
 import { useEffect } from "react";
 import { Alert } from "react-native";
@@ -24,7 +27,7 @@ const EditTransactionCategory = () => {
   }, [getTransactionCategories]);
 
   const handleSubmit = async (formData: TransactionCategoryFormData) => {
-    console.log("form data:", formData);
+    // console.log("form data:", formData);
     await editTransactionCategory(formData);
     router.push("/transactionCategoryModal");
   };

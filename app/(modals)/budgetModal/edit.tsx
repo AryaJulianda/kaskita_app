@@ -29,7 +29,7 @@ const EditTransactionCategoryBudget = () => {
   }, [getTransactionCategories]);
 
   const handleSubmit = async (formData: TransactionCategoryBudgetFormData) => {
-    console.log("form data:", formData);
+    // console.log("form data:", formData);
     if (formData.id) {
       await updateTransactionCategoryBudget(formData);
     } else {

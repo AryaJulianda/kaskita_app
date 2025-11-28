@@ -82,26 +82,13 @@ const AssetForm: React.FC<AssetFormProps> = ({
           onSelect={(cat) => setForm({ ...form, category_id: cat.id })}
         />
 
-        {/* balance / target */}
-        {/* {(form.category_id === 1 || form.category_id === 2) && ( */}
         <InputField
-          label="Initial Balance"
+          label={form.id ? "Adjust Balance" : "Initial Balance"}
           type="number"
           value={form.balance}
           onChangeText={handleBalanceChange}
         />
         {/* )} */}
-
-        {/* {(form.category_id === 5 ||
-          form.category_id === 6 ||
-          form.category_id === 7) && (
-          <InputField
-            label="Target"
-            type="number"
-            value={form.balance}
-            onChangeText={handleBalanceChange}
-          />
-        )} */}
       </ScrollView>
 
       <View style={styles.footer}>
