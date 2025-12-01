@@ -1,18 +1,33 @@
 import BackButton from "@/components/BackButton";
+import Button from "@/components/Button";
 import Header from "@/components/Header";
+import { InputField } from "@/components/InputField";
 import ModalWrapper from "@/components/ModalWrapper";
 import Typo from "@/components/Typo";
 import { colors, radius, spacingX, spacingY } from "@/constants/theme";
+import { useUserSettingStore } from "@/stores/userSettingStore";
 import { accountOptionType } from "@/types";
 import { verticalScale } from "@/utils/styling";
 import { useRouter } from "expo-router";
-import { CaretRightIcon, NotepadIcon } from "phosphor-react-native";
-import React from "react";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import {
+  CalendarDotsIcon,
+  CaretRightIcon,
+  NotepadIcon,
+} from "phosphor-react-native";
+import React, { useState } from "react";
+import {
+  Alert,
+  Modal,
+  StyleSheet,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
+} from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 
 const preference = () => {
   const router = useRouter();
+  const { updateUserSettings, isLoading, settings } = useUserSettingStore();
 
   const handleOnPress = (item: accountOptionType) => {
     if (item.routeName) {
@@ -27,7 +42,34 @@ const preference = () => {
       routeName: "/transactionCategoryModal",
       bgColor: "#6366f1",
     },
+    {
+      title: "Tanggal Tutup Buku",
+      icon: <CalendarDotsIcon size={26} color={colors.white} weight="fill" />,
+      bgColor: "#6366f1",
+      value: settings.closing_date ?? 1,
+      onPress: () => setEditClosingDateModal(true),
+    },
   ];
+
+  // modal edit closing date
+  const [editClosingDateModal, setEditClosingDateModal] = useState(false);
+  const [tempValue, setTempValue] = useState("");
+
+  const submitClosingDate = async () => {
+    console.log("submit closing date:", tempValue);
+    if (!tempValue || Number(tempValue) < 1 || Number(tempValue) > 31) {
+      Alert.alert("Invalid", "Tanggal tutup buku tidak valid");
+      return;
+    }
+    await updateUserSettings({ closing_date: Number(tempValue) });
+    setEditClosingDateModal(false);
+  };
+
+  const handleChangeClosingDate = (date: string) => {
+    if (date.length > 2) return;
+
+    setTempValue(date);
+  };
 
   return (
     <ModalWrapper>
@@ -49,7 +91,9 @@ const preference = () => {
               >
                 <TouchableOpacity
                   style={styles.flexRow}
-                  onPress={() => handleOnPress(item)}
+                  onPress={() =>
+                    item.onPress ? item.onPress() : handleOnPress(item)
+                  }
                 >
                   {/* icon */}
                   <View
@@ -68,17 +112,57 @@ const preference = () => {
                     {item?.title}
                   </Typo>
 
-                  <CaretRightIcon
-                    size={verticalScale(20)}
-                    weight="bold"
-                    color={colors.white}
-                  />
+                  {!item.value ? (
+                    <CaretRightIcon
+                      size={verticalScale(20)}
+                      weight="bold"
+                      color={colors.primary}
+                    />
+                  ) : (
+                    <Typo
+                      size={16}
+                      fontWeight={"500"}
+                      color={colors.neutral600}
+                      style={{
+                        backgroundColor: colors.neutral100,
+                        paddingHorizontal: 15,
+                        paddingVertical: 5,
+                        borderRadius: radius._10,
+                      }}
+                    >
+                      {item.value}
+                    </Typo>
+                  )}
                 </TouchableOpacity>
               </Animated.View>
             );
           })}
         </View>
       </View>
+
+      {/* Modal */}
+      {/* Modal Edit Base Budget */}
+      <Modal visible={editClosingDateModal} transparent animationType="fade">
+        <TouchableWithoutFeedback
+          onPress={() => setEditClosingDateModal(false)}
+        >
+          <View style={styles.modalOverlay}>
+            <TouchableWithoutFeedback>
+              <View style={styles.modalBox}>
+                <InputField
+                  label="Edit Tanggal Tutup Buku"
+                  type="number"
+                  value={tempValue}
+                  onChangeText={(t) => handleChangeClosingDate(t)}
+                />
+                <Button onPress={submitClosingDate}>
+                  <Typo>Save</Typo>
+                </Button>
+              </View>
+            </TouchableWithoutFeedback>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
     </ModalWrapper>
   );
 };
@@ -109,5 +193,30 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: spacingX._10,
+  },
+  // modal
+  modalContent: {
+    flex: 1,
+    backgroundColor: "white",
+    padding: 20,
+    marginTop: "auto",
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)", // backdrop gelap
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+  },
+  modalBox: {
+    backgroundColor: "white",
+    borderRadius: 16,
+    padding: 20,
+    width: "85%", // ga full layar
+    maxWidth: 400, // biar elegan di tablet
+    alignSelf: "center",
+    gap: spacingY._15,
   },
 });

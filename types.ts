@@ -24,6 +24,8 @@ export type accountOptionType = {
   icon: React.ReactNode;
   bgColor: string;
   routeName?: any;
+  value?: string | number;
+  onPress?: () => void;
 };
 
 export type TypoProps = {

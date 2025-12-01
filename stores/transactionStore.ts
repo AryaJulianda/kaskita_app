@@ -6,6 +6,7 @@ import { useImageStore } from "./imageStore";
 import { TransactionCategory } from "./transactionCategoryStore";
 
 import * as FileSystem from "expo-file-system/legacy"; // ✅ gunakan modul legacy
+import { useUserSettingStore } from "./userSettingStore";
 const fileUri = FileSystem.documentDirectory + "transactions-storage.json";
 
 // ===== Types =====
@@ -108,6 +109,29 @@ export interface Loan {
   updated_at: string;
 }
 
+const getDefaultSelectedDate = () => {
+  const closingDate =
+    useUserSettingStore.getState().settings?.closing_date || 1;
+
+  const today = new Date();
+  const currentDate = today.getDate();
+
+  let month = today.getMonth() + 1; // 1–12
+  let year = today.getFullYear();
+
+  // Jika sudah lewat closing date → pindah ke next month
+  if (currentDate > closingDate) {
+    month += 1;
+    if (month > 12) {
+      month = 1;
+      year += 1;
+    }
+  }
+
+  const mm = String(month).padStart(2, "0");
+  return `${mm}-${year}`;
+};
+
 // ===== Store Implementation =====
 export const useTransactionStore = create<TransactionState>()(
   persist(
@@ -159,10 +183,7 @@ export const useTransactionStore = create<TransactionState>()(
         created_at: null,
         updated_at: null,
       },
-      selectedDate: `${String(new Date().getMonth() + 1).padStart(
-        2,
-        "0"
-      )}-${new Date().getFullYear()}`,
+      selectedDate: getDefaultSelectedDate(),
       // Actions
 
       setDetailTransaction: (transaction) => {

@@ -4,6 +4,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 import * as FileSystem from "expo-file-system/legacy"; // ✅ gunakan modul legacy
+import { useUserSettingStore } from "./userSettingStore";
 const fileUri = FileSystem.documentDirectory + "budget-storage.json";
 
 // ===== Types =====
@@ -23,16 +24,36 @@ export type BudgetingState = {
   setSelectedDate: (date: string) => void;
 };
 
+const getDefaultSelectedDate = () => {
+  const closingDate =
+    useUserSettingStore.getState().settings?.closing_date || 1;
+
+  const today = new Date();
+  const currentDate = today.getDate();
+
+  let month = today.getMonth() + 1; // 1–12
+  let year = today.getFullYear();
+
+  // Jika sudah lewat closing date → pindah ke next month
+  if (currentDate > closingDate) {
+    month += 1;
+    if (month > 12) {
+      month = 1;
+      year += 1;
+    }
+  }
+
+  const mm = String(month).padStart(2, "0");
+  return `${mm}-${year}`;
+};
+
 // ===== Store Implementation =====
 export const useBudgetingStore = create<BudgetingState>()(
   persist(
     (set, get) => ({
       categoryBudgets: [],
       isLoading: false,
-      selectedDate: `${String(new Date().getMonth() + 1).padStart(
-        2,
-        "0"
-      )}-${new Date().getFullYear()}`,
+      selectedDate: getDefaultSelectedDate(),
 
       getCategoryBudgets: async () => {
         set({ isLoading: true });

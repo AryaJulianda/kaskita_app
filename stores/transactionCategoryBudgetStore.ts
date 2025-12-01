@@ -5,6 +5,7 @@ import { persist } from "zustand/middleware";
 import { useTransactionCategoryStore } from "./transactionCategoryStore";
 
 import * as FileSystem from "expo-file-system/legacy"; // ✅ gunakan modul legacy
+import { usePathname, useRouter } from "expo-router";
 const fileUri =
   FileSystem.documentDirectory + "transaction-category-budget-storage.json";
 
@@ -37,6 +38,8 @@ export const useTransactionCategoryBudgetStore =
       (set, get) => ({
         isLoading: false,
         createTransactionCategoryBudget: async (payload) => {
+          const router = useRouter();
+          const pathname = usePathname();
           const { getDetailTransactionCategory } =
             useTransactionCategoryStore.getState();
           set({ isLoading: true });
@@ -49,7 +52,11 @@ export const useTransactionCategoryBudgetStore =
             getDetailTransactionCategory(payload.transaction_category_id);
 
             set({ isLoading: false });
-            Alert.alert("Success", "Budget kategori berhasil ditambahkan ✅");
+
+            router.replace({
+              pathname: "/(modals)/budgetModal/edit",
+              params: { refresh: Date.now().toString() },
+            });
           } catch (err: any) {
             set({ isLoading: false });
             console.log(
