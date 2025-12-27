@@ -110,7 +110,7 @@ export interface Loan {
 }
 
 const getDefaultSelectedDate = () => {
-  const closingDate =
+  let monthlyStartDate =
     useUserSettingStore.getState().settings?.closing_date || 1;
 
   const today = new Date();
@@ -119,14 +119,21 @@ const getDefaultSelectedDate = () => {
   let month = today.getMonth() + 1; // 1–12
   let year = today.getFullYear();
 
-  // Jika sudah lewat closing date → pindah ke next month
-  if (currentDate > closingDate) {
-    month += 1;
-    if (month > 12) {
-      month = 1;
-      year += 1;
+  // Case: monthlyStartDate = 1 → normal calendar month (Jan = Jan)
+  if (monthlyStartDate === 1) {
+    return `${String(month).padStart(2, "0")}-${year}`;
+  }
+
+  if (currentDate < monthlyStartDate) {
+    // masih masuk periode bulan sebelumnya
+    month -= 1;
+    if (month === 0) {
+      month = 12;
+      year -= 1;
     }
   }
+  // else: currentDate >= monthlyStartDate
+  // berarti periode adalah bulan sekarang → tidak diubah
 
   const mm = String(month).padStart(2, "0");
   return `${mm}-${year}`;

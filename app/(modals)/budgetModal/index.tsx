@@ -52,7 +52,9 @@ const index = () => {
           <Loading />
         ) : (
           <FlatList
-            data={transactionCategories}
+            data={transactionCategories.filter(
+              (item) => item.type == "EXPENSES"
+            )}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => {
               const baseBudget =

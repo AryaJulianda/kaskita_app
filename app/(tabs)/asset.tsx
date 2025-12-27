@@ -209,7 +209,7 @@ const Asset = () => {
         <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
           <View style={{ flex: 1 }}>
             <Typo size={13} fontWeight={500} color={colors.neutral500}>
-              Paid Amount
+              Sudah dibayarkan
             </Typo>
             <Typo size={13} fontWeight={600} color={colors.primary}>
               {new Intl.NumberFormat("id-ID", {
@@ -225,7 +225,7 @@ const Asset = () => {
             }}
           >
             <Typo size={13} fontWeight={500} color={colors.neutral500}>
-              Principal
+              Total Pinjaman
             </Typo>
             <Typo size={13} fontWeight={600} color={colors.green}>
               {new Intl.NumberFormat("id-ID", {
