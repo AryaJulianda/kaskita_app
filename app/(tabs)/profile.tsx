@@ -15,6 +15,7 @@ import {
   HandshakeIcon,
   LockIcon,
   PowerIcon,
+  RepeatIcon,
   UserIcon,
 } from "phosphor-react-native";
 import React, { useCallback } from "react";
@@ -28,7 +29,7 @@ const Profile = () => {
   useFocusEffect(
     useCallback(() => {
       getProfile();
-    }, [getProfile])
+    }, [getProfile]),
   );
 
   const showLogoutAlert = () => {
@@ -61,6 +62,12 @@ const Profile = () => {
       title: "Edit Profile",
       icon: <UserIcon size={26} color={colors.white} weight="fill" />,
       routeName: "/profileModal",
+      bgColor: "#6366f1",
+    },
+    {
+      title: "Transaksi Rutin",
+      icon: <RepeatIcon size={26} color={colors.white} weight="fill" />,
+      routeName: "/routineTransactionModal",
       bgColor: "#6366f1",
     },
     {

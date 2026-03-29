@@ -3,27 +3,25 @@ import DeleteIcon from "@/components/DeleteButton";
 import TransactionForm from "@/components/Form/TransactionForm";
 import Header from "@/components/Header";
 import ModalWrapper from "@/components/ModalWrapper";
-import { SOURCE_PATH } from "@/constants";
 import { spacingY } from "@/constants/theme";
 import { useAssetStore } from "@/stores/assetStrore";
 import { useLoanStore } from "@/stores/loanStore";
+import { useRoutineTransactionStore } from "@/stores/routineTransactionStore";
 import { useSavingStore } from "@/stores/savingStore";
 import { useTransactionCategoryStore } from "@/stores/transactionCategoryStore";
-import { useTransactionStore } from "@/stores/transactionStore";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback } from "react";
 import { Alert } from "react-native";
 
-const EditTransaction = () => {
+const EditRoutineTransaction = () => {
   const router = useRouter();
   const { assets, isLoading: assetIsLoading, getAssets } = useAssetStore();
   const {
-    editTransaction,
-    isLoading: transIsLoading,
-    detailTransaction,
-    deleteTransaction,
-  } = useTransactionStore();
-
+    updateRoutineTransaction,
+    detailRoutineTransaction,
+    deleteRoutineTransaction,
+    isLoading: routineIsLoading,
+  } = useRoutineTransactionStore();
   const { savings, isLoading: savingIsLoading, getSavings } = useSavingStore();
   const { loans, isLoading: loanIsLoading, getLoans } = useLoanStore();
 
@@ -43,23 +41,24 @@ const EditTransaction = () => {
   );
 
   const handleSubmit = async (formData: FormData) => {
-    // console.log("form data", formData);
-
-    await editTransaction(formData);
-    router.push("/transaction/daily");
+    console.log("form data:", formData);
+    await updateRoutineTransaction(formData);
+    router.push("/routineTransactionModal");
   };
 
   const handleDelete = async () => {
-    if (!detailTransaction?.id) return;
+    if (!detailRoutineTransaction?.id) return;
 
-    Alert.alert("Confirm", "Are you sure to delete this transactions?", [
-      { text: "Cancel", style: "cancel" },
+    Alert.alert("Confirm", "Kamu yakin ingin menghapus Transaksi Rutin ini?", [
+      { text: "Batal", style: "cancel" },
       {
-        text: "Delete",
+        text: "Ya",
         style: "destructive",
         onPress: async () => {
-          await deleteTransaction(detailTransaction.id);
-          router.push("/transaction/daily");
+          await deleteRoutineTransaction(detailRoutineTransaction.id);
+          router.push({
+            pathname: "/routineTransactionModal",
+          });
         },
       },
     ]);
@@ -68,31 +67,20 @@ const EditTransaction = () => {
   return (
     <ModalWrapper>
       <Header
-        title="Edit Transaction"
-        leftIcon={<BackButton path="/transaction/daily" />}
+        title="Edit Transaksi Rutin"
+        leftIcon={<BackButton path="/routineTransactionModal" />}
         rightIcon={<DeleteIcon onPress={handleDelete} />}
-        style={{
-          marginBottom: spacingY._10,
-        }}
+        style={{ marginBottom: spacingY._10 }}
       />
       <TransactionForm
         initialData={{
-          ...detailTransaction,
+          ...detailRoutineTransaction,
           amount: new Intl.NumberFormat("id-ID").format(
-            detailTransaction.amount,
+            detailRoutineTransaction?.amount || 0,
           ),
           additional_cost: new Intl.NumberFormat("id-ID").format(
-            detailTransaction.additional_cost,
+            detailRoutineTransaction?.additional_cost || 0,
           ),
-          date: detailTransaction.date
-            ? new Date(detailTransaction.date)
-            : new Date(),
-          time: detailTransaction.date
-            ? new Date(detailTransaction.date)
-            : new Date(),
-          image_uri:
-            detailTransaction.image[0]?.path &&
-            SOURCE_PATH + detailTransaction.image[0]?.path,
         }}
         assets={assets}
         categories={transactionCategories}
@@ -100,17 +88,18 @@ const EditTransaction = () => {
         loans={loans}
         loading={
           assetIsLoading ||
-          transIsLoading ||
           categoryIsLoading ||
           savingIsLoading ||
-          loanIsLoading
+          loanIsLoading ||
+          routineIsLoading
         }
-        submitLabel="Edit Transaction"
+        submitLabel="Edit Transaksi Rutin"
         onSubmit={handleSubmit}
-        showRoutineOptions={false}
+        showRoutineOptions={true}
+        isDefaultRoutine={true}
       />
     </ModalWrapper>
   );
 };
 
-export default EditTransaction;
+export default EditRoutineTransaction;

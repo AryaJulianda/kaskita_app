@@ -8,13 +8,13 @@ import { colors, radius, spacingX, spacingY } from "@/constants/theme";
 import { useUserSettingStore } from "@/stores/userSettingStore";
 import { accountOptionType } from "@/types";
 import { verticalScale } from "@/utils/styling";
-import { useRouter } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 import {
   CalendarDotsIcon,
   CaretRightIcon,
   NotepadIcon,
 } from "phosphor-react-native";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import {
   Alert,
   Modal,
@@ -27,7 +27,8 @@ import Animated, { FadeInDown } from "react-native-reanimated";
 
 const preference = () => {
   const router = useRouter();
-  const { updateUserSettings, isLoading, settings } = useUserSettingStore();
+  const { updateUserSettings, isLoading, settings, getUserSettings } =
+    useUserSettingStore();
 
   const handleOnPress = (item: accountOptionType) => {
     if (item.routeName) {
@@ -70,6 +71,12 @@ const preference = () => {
 
     setTempValue(date);
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      getUserSettings();
+    }, [getUserSettings])
+  );
 
   return (
     <ModalWrapper>

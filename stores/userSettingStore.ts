@@ -44,6 +44,7 @@ export const useUserSettingStore = create<UserSettingState>()(
         set({ isLoading: true });
         try {
           const { data } = await api.get("/api/user/settings");
+          console.log("Get User Settings Response:", data);
 
           set({
             settings: {
@@ -129,6 +130,6 @@ export const useUserSettingStore = create<UserSettingState>()(
         if (error) console.log("Persist error", error);
         else console.log("✅ User Setting rehydrated");
       },
-    }
-  )
+    },
+  ),
 );

@@ -8,15 +8,12 @@ import { useLoanStore } from "@/stores/loanStore";
 import { useRoutineTransactionStore } from "@/stores/routineTransactionStore";
 import { useSavingStore } from "@/stores/savingStore";
 import { useTransactionCategoryStore } from "@/stores/transactionCategoryStore";
-import { useTransactionStore } from "@/stores/transactionStore";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback } from "react";
 
-const CreateTransaction = () => {
+const CreateRoutineTransaction = () => {
   const router = useRouter();
   const { assets, isLoading: assetIsLoading, getAssets } = useAssetStore();
-  const { createTransaction, isLoading: transIsLoading } =
-    useTransactionStore();
   const { createRoutineTransaction, isLoading: routineIsLoading } =
     useRoutineTransactionStore();
   const { savings, isLoading: savingIsLoading, getSavings } = useSavingStore();
@@ -39,18 +36,15 @@ const CreateTransaction = () => {
 
   const handleSubmit = async (formData: FormData) => {
     // console.log("form data:", formData);
-    await createTransaction(formData);
-    if (formData.get("is_routine") === "1") {
-      await createRoutineTransaction(formData);
-    }
+    await createRoutineTransaction(formData);
     router.push("/transaction/daily");
   };
 
   return (
     <ModalWrapper>
       <Header
-        title="Buat Transaksi"
-        leftIcon={<BackButton path="/transaction/daily" />}
+        title="Buat Transaksi Rutin"
+        leftIcon={<BackButton path="/routineTransactionModal" />}
         style={{ marginBottom: spacingY._10 }}
       />
       <TransactionForm
@@ -60,18 +54,18 @@ const CreateTransaction = () => {
         loans={loans}
         loading={
           assetIsLoading ||
-          transIsLoading ||
           categoryIsLoading ||
           savingIsLoading ||
           loanIsLoading ||
           routineIsLoading
         }
-        submitLabel="Create Transaction"
+        submitLabel="Buat"
         onSubmit={handleSubmit}
         showRoutineOptions={true}
+        isDefaultRoutine={true}
       />
     </ModalWrapper>
   );
 };
 
-export default CreateTransaction;
+export default CreateRoutineTransaction;

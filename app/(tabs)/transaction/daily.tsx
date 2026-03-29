@@ -37,47 +37,16 @@ const groupTransactionsByDate = (transactions: any[]) => {
 };
 
 const Daily = () => {
-  const { transactions, getTransactions, isLoading, setDetailTransaction } =
+  const { transactions, getTransactions, isLoading, setDetailTransaction, transactionSummary } =
     useTransactionStore();
   const { isRecording, start, stop } = useVoiceRecorder();
   const { uploadVoice, isLoading: isLoadingVoice } = useVoiceTransactionStore();
   const [refreshing, setRefreshing] = useState(false);
 
-  // Calculate income, expenses, and total
-  const income = useMemo(
-    () =>
-      transactions
-        .filter((tx) => tx.type === "INCOME")
-        .reduce(
-          (sum, tx) =>
-            sum +
-            (typeof tx.amount === "number"
-              ? tx.amount
-              : parseFloat(tx.amount) || 0),
-          0
-        ),
-    [transactions]
-  );
-  const expense = useMemo(
-    () =>
-      transactions
-        .filter((tx) => tx.type === "EXPENSES" || tx.type === "LOAN")
-        .reduce(
-          (sum, tx) =>
-            sum +
-            (typeof tx.amount === "number"
-              ? tx.amount
-              : parseFloat(tx.amount) || 0),
-          0
-        ),
-    [transactions]
-  );
-  const total = income - expense;
-
   useFocusEffect(
     useCallback(() => {
       getTransactions();
-    }, [getTransactions])
+    }, [getTransactions]),
   );
 
   const onRefresh = async () => {
@@ -101,7 +70,7 @@ const Daily = () => {
   // Grouped data for FlatList
   const groupedData = useMemo(
     () => groupTransactionsByDate(transactions),
-    [transactions]
+    [transactions],
   );
 
   // Render single transaction item
@@ -141,17 +110,17 @@ const Daily = () => {
             item.type === "INCOME"
               ? colors.primary
               : item.type === "TRANSFER"
-              ? colors.blue
-              : item.type === "SAVING"
-              ? colors.green
-              : colors.rose
+                ? colors.blue
+                : item.type === "SAVING"
+                  ? colors.green
+                  : colors.rose
           }
         >
           {item.type === "INCOME"
             ? "+"
             : item.type == "EXPENSES" || item.type == "LOAN"
-            ? "-"
-            : ""}
+              ? "-"
+              : ""}
           {new Intl.NumberFormat("id-ID", {
             style: "currency",
             currency: "IDR",
@@ -159,7 +128,7 @@ const Daily = () => {
           }).format(
             typeof item.amount === "number"
               ? item.amount
-              : parseFloat(item.amount) || 0
+              : parseFloat(item.amount) || 0,
           )}
         </Typo>
         {item.asset && (
@@ -205,9 +174,9 @@ const Daily = () => {
         <>
           {/* Summary Row */}
           <View style={styles.summaryRow}>
-            <SummaryItem label="Income" value={income} color={colors.primary} />
-            <SummaryItem label="Expenses" value={expense} color={colors.rose} />
-            <SummaryItem label="Total" value={total} color={colors.skyblue} />
+            <SummaryItem label="Income" value={transactionSummary.income} color={colors.primary} />
+            <SummaryItem label="Expenses" value={transactionSummary.expense} color={colors.rose} />
+            <SummaryItem label="Total" value={transactionSummary.balance} color={colors.skyblue} />
           </View>
           {/* Transaction List */}
           <FlatList

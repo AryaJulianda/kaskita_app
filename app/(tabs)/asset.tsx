@@ -22,6 +22,10 @@ type ListItem = AssetType | Saving | Loan;
 const Asset = () => {
   const router = useRouter();
   const [refreshing, setRefreshing] = useState(false);
+  const currencyFormatter = new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+  });
 
   const {
     assets,
@@ -47,7 +51,7 @@ const Asset = () => {
 
   const { type } = useLocalSearchParams();
   const [activeType, setActiveType] = useState<"ASSETS" | "SAVINGS" | "LOANS">(
-    type == "SAVINGS" || type == "LOANS" ? type : "ASSETS"
+    type == "SAVINGS" || type == "LOANS" ? type : "ASSETS",
   );
 
   useFocusEffect(
@@ -55,7 +59,7 @@ const Asset = () => {
       getAssets();
       getSavings();
       getLoans();
-    }, [getAssets, getSavings, getLoans])
+    }, [getAssets, getSavings, getLoans]),
   );
 
   const onRefresh = async () => {
@@ -91,13 +95,7 @@ const Asset = () => {
       <Typo size={14} style={{ color: "gray" }}>
         {item.category?.name}
       </Typo>
-      <Typo size={14}>
-        {new Intl.NumberFormat("id-ID", {
-          style: "currency",
-          currency: "IDR",
-          minimumFractionDigits: 2,
-        }).format(item.balance)}
-      </Typo>
+      <Typo size={14}>{currencyFormatter.format(item.balance)}</Typo>
     </TouchableOpacity>
   );
 
@@ -107,7 +105,7 @@ const Asset = () => {
         ? 0
         : Math.min(
             100,
-            Math.round((item.current_amount / item.target_amount) * 100)
+            Math.round((item.current_amount / item.target_amount) * 100),
           );
     return (
       <TouchableOpacity
@@ -144,10 +142,7 @@ const Asset = () => {
               Current Amount
             </Typo>
             <Typo size={13} fontWeight={600} color={colors.primary}>
-              {new Intl.NumberFormat("id-ID", {
-                style: "currency",
-                currency: "IDR",
-              }).format(item.current_amount)}
+              {currencyFormatter.format(item.current_amount)}
             </Typo>
           </View>
           <View
@@ -160,10 +155,7 @@ const Asset = () => {
               Target Amount
             </Typo>
             <Typo size={13} fontWeight={600} color={colors.green}>
-              {new Intl.NumberFormat("id-ID", {
-                style: "currency",
-                currency: "IDR",
-              }).format(item.target_amount)}
+              {currencyFormatter.format(item.target_amount)}
             </Typo>
           </View>
         </View>
@@ -172,9 +164,10 @@ const Asset = () => {
   };
 
   const RenderLoanItem = ({ item }: { item: Loan }) => {
-    const paidAmount = item.principal - item.remaining_balance;
+    const paidAmount = Math.max(item.principal - item.remaining_balance, 0);
+    const remainingAmount = Math.max(item.remaining_balance, 0);
     const percent =
-      paidAmount === 0
+      item.principal <= 0
         ? 0
         : Math.min(100, Math.round((paidAmount / item.principal) * 100));
     return (
@@ -206,32 +199,31 @@ const Asset = () => {
             {percent}%
           </Typo>
         </View>
-        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-          <View style={{ flex: 1 }}>
-            <Typo size={13} fontWeight={500} color={colors.neutral500}>
-              Sudah dibayarkan
-            </Typo>
-            <Typo size={13} fontWeight={600} color={colors.primary}>
-              {new Intl.NumberFormat("id-ID", {
-                style: "currency",
-                currency: "IDR",
-              }).format(paidAmount)}
-            </Typo>
+        <View style={styles.loanStatsRow}>
+          <View style={styles.loanLeftStats}>
+            <View style={styles.loanStatItem}>
+              <Typo size={12} fontWeight={500} color={colors.neutral500}>
+                Terbayar
+              </Typo>
+              <Typo size={11} fontWeight={600} color={colors.primary}>
+                {currencyFormatter.format(paidAmount)}
+              </Typo>
+            </View>
+            <View style={styles.loanStatItem}>
+              <Typo size={12} fontWeight={500} color={colors.neutral500}>
+                Sisa
+              </Typo>
+              <Typo size={11} fontWeight={600} color={colors.rose}>
+                {currencyFormatter.format(remainingAmount)}
+              </Typo>
+            </View>
           </View>
-          <View
-            style={{
-              flex: 1,
-              alignItems: "flex-end",
-            }}
-          >
-            <Typo size={13} fontWeight={500} color={colors.neutral500}>
-              Total Pinjaman
+          <View style={styles.loanRightStats}>
+            <Typo size={12} fontWeight={500} color={colors.neutral500}>
+              Total
             </Typo>
-            <Typo size={13} fontWeight={600} color={colors.green}>
-              {new Intl.NumberFormat("id-ID", {
-                style: "currency",
-                currency: "IDR",
-              }).format(item.principal)}
+            <Typo size={11} fontWeight={600} color={colors.green}>
+              {currencyFormatter.format(item.principal)}
             </Typo>
           </View>
         </View>
@@ -319,8 +311,8 @@ const Asset = () => {
                     activeType == "ASSETS"
                       ? assets
                       : activeType == "SAVINGS"
-                      ? savings
-                      : loans
+                        ? savings
+                        : loans
                   }
                   keyExtractor={(item) => item.id}
                   renderItem={({ item }) => {
@@ -347,8 +339,8 @@ const Asset = () => {
                       {activeType == "ASSETS"
                         ? "Belum ada Asset"
                         : activeType == "SAVINGS"
-                        ? "Belum ada Tabungan"
-                        : "Belum ada Pinjaman"}
+                          ? "Belum ada Tabungan"
+                          : "Belum ada Pinjaman"}
                     </Typo>
                   }
                   ListFooterComponent={
@@ -438,14 +430,12 @@ const styles = StyleSheet.create({
     paddingTop: spacingY._15,
   },
   card: {
-    padding: 10,
-    backgroundColor: "white",
-    shadowColor: "#000",
+    padding: 12,
+    backgroundColor: colors.white,
     marginBottom: 10,
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-    borderRadius: 8,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: colors.neutral200,
   },
   type: {
     borderRadius: 100,
@@ -470,5 +460,26 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+  },
+  loanStatsRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    marginTop: 6,
+    paddingTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: colors.neutral200,
+  },
+  loanLeftStats: {
+    flex: 1,
+    gap: 6,
+  },
+  loanRightStats: {
+    alignItems: "flex-end",
+    justifyContent: "center",
+    marginLeft: 16,
+  },
+  loanStatItem: {
+    gap: 2,
   },
 });

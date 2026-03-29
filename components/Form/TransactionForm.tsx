@@ -15,6 +15,7 @@ import {
   Alert,
   ScrollView,
   StyleSheet,
+  Switch,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -29,6 +30,8 @@ type TransactionFormProps = {
   loading?: boolean;
   submitLabel?: string;
   onSubmit: (formData: FormData) => void;
+  showRoutineOptions?: boolean;
+  isDefaultRoutine?: boolean;
 };
 
 const TransactionForm: React.FC<TransactionFormProps> = ({
@@ -40,6 +43,8 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
   loading,
   submitLabel = "Save Transaction",
   onSubmit,
+  showRoutineOptions = false,
+  isDefaultRoutine = false,
 }) => {
   const router = useRouter();
   const [form, setForm] = useState<TransactionFormData>({
@@ -57,6 +62,15 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
     transfer_asset_id: "",
     additional_cost: "",
     image_uri: "",
+    is_routine: isDefaultRoutine ? true : false,
+
+    frequency: "MONTHLY",
+    day_of_month: "",
+    day_of_week: "",
+    month_of_year: "",
+    is_reminder_enabled: true,
+    reminder_days_before: 0,
+    is_auto_generated: false,
     ...initialData,
   });
 
@@ -101,7 +115,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
       date.getDate(),
       time.getHours(),
       time.getMinutes(),
-      time.getSeconds()
+      time.getSeconds(),
     ).toISOString();
   };
 
@@ -128,7 +142,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
     payload.append("date", getDateTime());
     payload.append(
       "amount",
-      String(parseInt(form.amount.replace(/\./g, ""), 10))
+      String(parseInt(form.amount.replace(/\./g, ""), 10)),
     );
     payload.append("asset_id", form.asset_id);
     if (form.category_id) payload.append("category_id", form.category_id);
@@ -139,7 +153,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
     if (form.additional_cost)
       payload.append(
         "additional_cost",
-        String(parseInt(form.additional_cost.replace(/\./g, ""), 10))
+        String(parseInt(form.additional_cost.replace(/\./g, ""), 10)),
       );
     if (form.image_uri) {
       payload.append("image_uri", form.image_uri);
@@ -147,6 +161,27 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
     if (form.reference_id) payload.append("reference_id", form.reference_id);
     if (form.reference_type)
       payload.append("reference_type", form.reference_type);
+    payload.append("is_routine", form.is_routine ? "1" : "0");
+
+    if (form.is_routine) {
+      if (form.frequency) payload.append("frequency", form.frequency);
+      if (form.day_of_month)
+        payload.append("day_of_month", String(form.day_of_month));
+      if (form.day_of_week)
+        payload.append("day_of_week", String(form.day_of_week));
+      if (form.month_of_year)
+        payload.append("month_of_year", String(form.month_of_year));
+      payload.append(
+        "is_reminder_enabled",
+        form.is_reminder_enabled ? "1" : "0",
+      );
+      if (form.reminder_days_before)
+        payload.append(
+          "reminder_days_before",
+          String(form.reminder_days_before),
+        );
+      payload.append("is_auto_generated", form.is_auto_generated ? "1" : "0");
+    }
 
     onSubmit(payload);
   };
@@ -418,6 +453,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
           multiline
           numberOfLines={4}
         />
+
         <ImageInput
           label="Image"
           uri={form.image_uri}
@@ -428,6 +464,204 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
               deleteImage(uri.replace(SOURCE_PATH, ""));
           }}
         />
+
+        {showRoutineOptions && (
+          <View style={styles.routineContainer}>
+            <View style={{ flex: 1 }}>
+              <Typo fontWeight="medium" color={colors.neutral500}>
+                Transaksi Rutin
+              </Typo>
+              <Typo size={12} color={colors.neutral500}>
+                Aktifkan jika transaksi ini berulang
+              </Typo>
+            </View>
+
+            <Switch
+              value={isDefaultRoutine ? true : form.is_routine}
+              disabled={isDefaultRoutine}
+              onValueChange={(val) =>
+                setForm({
+                  ...form,
+                  is_routine: val,
+                })
+              }
+              trackColor={{
+                false: colors.neutral200,
+                true: colors.primary,
+              }}
+              thumbColor={"white"}
+            />
+
+            <View></View>
+          </View>
+        )}
+
+        {form.is_routine && showRoutineOptions && (
+          <View style={{ gap: spacingY._15 }}>
+            {/* Frequency */}
+            <SelectInput
+              label="Frekuensi"
+              labelModal="Frekuensi Transaksi"
+              placeholder="Pilih frekuensi"
+              value={form.frequency}
+              listItems={[
+                { id: "MONTHLY", name: "Bulanan" },
+                { id: "WEEKLY", name: "Mingguan" },
+                { id: "YEARLY", name: "Tahunan" },
+              ]}
+              onSelect={(item) =>
+                setForm({
+                  ...form,
+                  frequency: item.id,
+                  day_of_month: "",
+                  day_of_week: "",
+                  month_of_year: "",
+                })
+              }
+            />
+
+            {/* MONTHLY */}
+            {form.frequency === "MONTHLY" && (
+              <InputField
+                label="Tanggal tiap bulan (1–31)"
+                type="number"
+                value={String(form.day_of_month ?? "")}
+                onChangeText={(val) =>
+                  setForm({
+                    ...form,
+                    day_of_month: Number(val),
+                  })
+                }
+              />
+            )}
+
+            {/* WEEKLY */}
+            {form.frequency === "WEEKLY" && (
+              <SelectInput
+                label="Hari"
+                labelModal="Hari dalam minggu"
+                value={
+                  [
+                    "",
+                    "Senin",
+                    "Selasa",
+                    "Rabu",
+                    "Kamis",
+                    "Jumat",
+                    "Sabtu",
+                    "Minggu",
+                  ][Number(form.day_of_week) || 0]
+                }
+                listItems={[
+                  { id: 1, name: "Senin" },
+                  { id: 2, name: "Selasa" },
+                  { id: 3, name: "Rabu" },
+                  { id: 4, name: "Kamis" },
+                  { id: 5, name: "Jumat" },
+                  { id: 6, name: "Sabtu" },
+                  { id: 7, name: "Minggu" },
+                ]}
+                onSelect={(item) =>
+                  setForm({
+                    ...form,
+                    day_of_week: item.id,
+                  })
+                }
+              />
+            )}
+
+            {/* YEARLY */}
+            {form.frequency === "YEARLY" && (
+              <>
+                <InputField
+                  label="Tanggal (1–31)"
+                  type="number"
+                  value={String(form.day_of_month ?? "")}
+                  onChangeText={(val) =>
+                    setForm({
+                      ...form,
+                      day_of_month: Number(val),
+                    })
+                  }
+                />
+
+                <InputField
+                  label="Bulan (1–12)"
+                  type="number"
+                  value={String(form.month_of_year ?? "")}
+                  onChangeText={(val) =>
+                    setForm({
+                      ...form,
+                      month_of_year: Number(val),
+                    })
+                  }
+                />
+              </>
+            )}
+
+            {/* Reminder */}
+            <View style={styles.routineContainer}>
+              <View style={{ flex: 1 }}>
+                <Typo fontWeight="medium" color={colors.neutral500}>
+                  Reminder
+                </Typo>
+                <Typo size={12} color={colors.neutral500}>
+                  Ingatkan H-1 sebelum transaksi
+                </Typo>
+              </View>
+
+              <Switch
+                value={form.is_reminder_enabled}
+                onValueChange={(val) =>
+                  setForm({ ...form, is_reminder_enabled: val })
+                }
+                trackColor={{
+                  false: colors.neutral200,
+                  true: colors.primary,
+                }}
+                thumbColor={"white"}
+              />
+            </View>
+
+            {/* {form.is_reminder_enabled && (
+              <InputField
+                label="Reminder H-berapa"
+                type="number"
+                value={String(form.reminder_days_before ?? 0)}
+                onChangeText={(val) =>
+                  setForm({
+                    ...form,
+                    reminder_days_before: Number(val),
+                  })
+                }
+              />
+            )} */}
+
+            {/* Reminder */}
+            <View style={styles.routineContainer}>
+              <View style={{ flex: 1 }}>
+                <Typo fontWeight="medium" color={colors.neutral500}>
+                  Catat Otomatis
+                </Typo>
+                <Typo size={12} color={colors.neutral500}>
+                  Catat transaksi secara otomatis sesuai jadwal
+                </Typo>
+              </View>
+
+              <Switch
+                value={form.is_auto_generated}
+                onValueChange={(val) =>
+                  setForm({ ...form, is_auto_generated: val })
+                }
+                trackColor={{
+                  false: colors.neutral200,
+                  true: colors.primary,
+                }}
+                thumbColor={"white"}
+              />
+            </View>
+          </View>
+        )}
       </ScrollView>
 
       <View style={styles.footer}>
@@ -496,6 +730,16 @@ const styles = StyleSheet.create({
     backgroundColor: colors.neutral100,
   },
   rowBetween: { flexDirection: "row", justifyContent: "space-between" },
+  routineContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingVertical: spacingY._10,
+    paddingHorizontal: spacingY._10,
+    borderWidth: 1,
+    borderColor: colors.neutral200,
+    borderRadius: 10,
+  },
   footer: {
     alignItems: "center",
     flexDirection: "row",

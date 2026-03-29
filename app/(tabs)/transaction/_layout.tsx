@@ -28,6 +28,11 @@ export default function TransactionsLayout() {
     useBudgetingStore();
   const { setSelectedDate: setTransactionDate, selectedDate: trxDate } =
     useTransactionStore();
+
+  useEffect(() => {
+    useTransactionStore.getState().initSelectedDate();
+  }, []);
+
   const { setSelectedYear, selectedYear } = useMonthlyTransactionStore();
 
   useEffect(() => {

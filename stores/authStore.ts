@@ -1,4 +1,5 @@
 import { KASKITA_BACKEND } from "@/constants";
+import { registerForPushNotifications } from "@/utils/registerForPushNotification";
 import axios from "axios";
 import { router } from "expo-router";
 import * as SecureStore from "expo-secure-store";
@@ -23,11 +24,11 @@ type AuthState = {
   registerUser: (
     name: string,
     email: string,
-    password: string
+    password: string,
   ) => Promise<void>;
   oauthGoogle: (
     accessToken: string,
-    photoProfile?: string | null
+    photoProfile?: string | null,
   ) => Promise<void>;
   loginUser: (email: string, password: string) => Promise<void>;
   logout: () => void;
@@ -40,6 +41,7 @@ type AuthState = {
   invitationPasscode: string;
   invitationExpiredAt: Date | null;
   groupDetail: any;
+  registerFcmToken: () => Promise<void>;
 };
 
 // ===============================
@@ -120,7 +122,7 @@ export const useAuthStore = create<AuthState>()(
           set({ isLoading: false });
           Alert.alert(
             "Error",
-            err.response?.data?.message ?? "Try again later"
+            err.response?.data?.message ?? "Try again later",
           );
           throw err;
         }
@@ -128,18 +130,18 @@ export const useAuthStore = create<AuthState>()(
 
       oauthGoogle: async (
         accessToken: string,
-        photoProfile?: string | null
+        photoProfile?: string | null,
       ) => {
         const { uploadImage } = useImageStore.getState();
         console.log("OAUth GOOGLE PROCESS >> START");
         try {
           console.log(
-            `OAUth GOOGLE PROCESS >> POST REQUEST >> ${KASKITA_BACKEND}/api/oauth/google`
+            `OAUth GOOGLE PROCESS >> POST REQUEST >> ${KASKITA_BACKEND}/api/oauth/google`,
           );
 
           const response = await axios.post(
             `${KASKITA_BACKEND}/api/oauth/google`,
-            { access_token: accessToken }
+            { access_token: accessToken },
           );
           console.log("OAUth GOOGLE PROCESS >> RESPONSE >> ", response);
 
@@ -168,6 +170,8 @@ export const useAuthStore = create<AuthState>()(
           }
 
           await get().getProfile();
+          await get().registerFcmToken();
+
           router.push("/transaction/daily");
         } catch (err: any) {
           console.error("Login error:", err.response?.data || err.message);
@@ -201,6 +205,7 @@ export const useAuthStore = create<AuthState>()(
           const expiryTime = Date.now() + data.expires_in * 1000;
 
           await get().getProfile();
+          await get().registerFcmToken();
 
           set({
             token: data.access_token,
@@ -213,6 +218,36 @@ export const useAuthStore = create<AuthState>()(
           set({ isLoading: false });
           Alert.alert("Error", err.response?.data?.message ?? "Login failed");
           throw err;
+        }
+      },
+
+      registerFcmToken: async () => {
+        try {
+          const token = get().token;
+          if (!token) {
+            console.log("FCM: no auth token, skip");
+            return;
+          }
+
+          const fcmToken = await registerForPushNotifications();
+          if (!fcmToken) {
+            console.log("FCM: no fcm token received");
+            return;
+          }
+
+          await api.post(
+            "/api/device/token",
+            { fcm_token: fcmToken },
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            },
+          );
+
+          console.log("✅ FCM token registered");
+        } catch (err) {
+          console.log("❌ Failed register FCM token", err);
         }
       },
 
@@ -253,7 +288,7 @@ export const useAuthStore = create<AuthState>()(
             { name },
             {
               headers: { Authorization: `Bearer ${token}` },
-            }
+            },
           );
 
           await get().getProfile();
@@ -275,7 +310,7 @@ export const useAuthStore = create<AuthState>()(
           await api.post(
             "/api/logout",
             {},
-            { headers: { Authorization: `Bearer ${token}` } }
+            { headers: { Authorization: `Bearer ${token}` } },
           );
           router.push("/(auth)/login");
         } catch (err) {
@@ -304,7 +339,7 @@ export const useAuthStore = create<AuthState>()(
             });
           } else {
             Alert.alert(
-              "Terjadi kesalahan saat generate code, coba lagi nanti!"
+              "Terjadi kesalahan saat generate code, coba lagi nanti!",
             );
           }
 
@@ -331,12 +366,12 @@ export const useAuthStore = create<AuthState>()(
             },
             {
               headers: { Authorization: `Bearer ${token}` },
-            }
+            },
           );
 
           if (status != 200) {
             Alert.alert(
-              "Terjadi kesalahan saat generate code, coba lagi nanti!"
+              "Terjadi kesalahan saat generate code, coba lagi nanti!",
             );
           }
 
@@ -360,7 +395,7 @@ export const useAuthStore = create<AuthState>()(
             "/api/groups/" + group_id,
             {
               headers: { Authorization: `Bearer ${token}` },
-            }
+            },
           );
 
           if (res.data) {
@@ -369,7 +404,7 @@ export const useAuthStore = create<AuthState>()(
 
           if (status != 200) {
             Alert.alert(
-              "Terjadi kesalahan saat generate code, coba lagi nanti!"
+              "Terjadi kesalahan saat generate code, coba lagi nanti!",
             );
           }
 
@@ -404,6 +439,6 @@ export const useAuthStore = create<AuthState>()(
         if (error) console.log("Persist error", error);
         else console.log("✅ Persist rehydrated");
       },
-    }
-  )
+    },
+  ),
 );

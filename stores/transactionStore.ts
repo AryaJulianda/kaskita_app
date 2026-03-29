@@ -8,6 +8,8 @@ import { TransactionCategory } from "./transactionCategoryStore";
 import * as FileSystem from "expo-file-system/legacy"; // ✅ gunakan modul legacy
 import { useUserSettingStore } from "./userSettingStore";
 const fileUri = FileSystem.documentDirectory + "transactions-storage.json";
+let isSelectedDateInitialized = false;
+let initSelectedDatePromise: Promise<void> | null = null;
 
 // ===== Types =====
 
@@ -38,6 +40,7 @@ export type Transaction = {
   category: TransactionCategory;
   ref_saving: Saving | null;
   ref_loan: Loan | null;
+  reference_type?: string | null;
 };
 
 export type TransactionFormData = {
@@ -56,6 +59,15 @@ export type TransactionFormData = {
   additional_cost: string;
   // image: string | undefined;
   image_uri: string | undefined;
+
+  is_routine: boolean;
+  frequency?: "MONTHLY" | "WEEKLY" | "YEARLY";
+  day_of_month?: number | "";
+  day_of_week?: number | "";
+  month_of_year?: number | "";
+  is_reminder_enabled?: boolean;
+  reminder_days_before?: number | "";
+  is_auto_generated?: boolean;
 };
 
 export type ImageType = {
@@ -74,9 +86,15 @@ export type TransactionState = {
   selectedDate: string;
   transactions: Transaction[];
   detailTransaction: Transaction;
+  transactionSummary: {
+    income: number;
+    expense: number;
+    balance: number;
+  };
   // Actions
   setSelectedDate: (date: string) => void;
   getTransactions: () => Promise<void>;
+  initSelectedDate: () => Promise<void>;
   setDetailTransaction: (transaction: Transaction) => void;
   createTransaction: (payload: FormData) => Promise<void>;
   editTransaction: (payload: FormData) => Promise<void>;
@@ -121,19 +139,23 @@ const getDefaultSelectedDate = () => {
 
   // Case: monthlyStartDate = 1 → normal calendar month (Jan = Jan)
   if (monthlyStartDate === 1) {
+    console.log(
+      "Default Selected Date:",
+      `${String(month).padStart(2, "0")}-${year}`,
+    );
     return `${String(month).padStart(2, "0")}-${year}`;
   }
 
-  if (currentDate < monthlyStartDate) {
-    // masih masuk periode bulan sebelumnya
-    month -= 1;
-    if (month === 0) {
-      month = 12;
-      year -= 1;
+  if (currentDate >= monthlyStartDate) {
+    // sudah masuk periode bulan berikutnya
+    month += 1;
+    if (month === 13) {
+      month = 1;
+      year += 1;
     }
   }
-  // else: currentDate >= monthlyStartDate
-  // berarti periode adalah bulan sekarang → tidak diubah
+  // else: currentDate < monthlyStartDate
+  // masih di periode bulan sekarang → tidak diubah
 
   const mm = String(month).padStart(2, "0");
   return `${mm}-${year}`;
@@ -144,6 +166,11 @@ export const useTransactionStore = create<TransactionState>()(
   persist(
     (set, get) => ({
       transactions: [],
+      transactionSummary: {
+        income: 0,
+        expense: 0,
+        balance: 0,
+      },
       transactionCategories: [],
       isLoading: false,
       detailTransaction: {
@@ -198,6 +225,8 @@ export const useTransactionStore = create<TransactionState>()(
       },
 
       getTransactions: async () => {
+        await get().initSelectedDate();
+
         set({ isLoading: true });
         const [month, year] = get().selectedDate.split("-");
         const params = new URLSearchParams({
@@ -211,17 +240,22 @@ export const useTransactionStore = create<TransactionState>()(
           console.log("GET TRANSACTION RESPONSE TIME:", end - start, "ms");
           set({
             transactions: data.data,
+            transactionSummary: {
+              income: data.summary.income,
+              expense: data.summary.expense,
+              balance: data.summary.income - data.summary.expense,
+            },
             isLoading: false,
           });
         } catch (err: any) {
           set({ isLoading: false });
           console.log(
             "Get Transactions Error:",
-            err.response?.data || err.message
+            err.response?.data || err.message,
           );
           Alert.alert(
             "Error",
-            "Gagal mengambil data transaksi. Coba lagi nanti."
+            "Gagal mengambil data transaksi. Coba lagi nanti.",
           );
         }
       },
@@ -256,7 +290,7 @@ export const useTransactionStore = create<TransactionState>()(
           set({ isLoading: false });
           console.log(
             "Create Transaction Error:",
-            err.response?.data || err.message
+            err.response?.data || err.message,
           );
           Alert.alert("Error", "Gagal menambahkan transaksi. Coba lagi nanti.");
         }
@@ -274,7 +308,7 @@ export const useTransactionStore = create<TransactionState>()(
               headers: {
                 "Content-Type": "multipart/form-data",
               },
-            }
+            },
           );
 
           const imageUri = payload.get("image_uri");
@@ -298,7 +332,7 @@ export const useTransactionStore = create<TransactionState>()(
           set({ isLoading: false });
           console.log(
             "Update Transaction Error:",
-            err.response?.data || err.message
+            err.response?.data || err.message,
           );
           Alert.alert("Error", "Gagal update transaksi. Coba lagi nanti.");
         }
@@ -322,7 +356,7 @@ export const useTransactionStore = create<TransactionState>()(
           set({ isLoading: false });
           console.log(
             "Delete Transaction Error:",
-            err.response?.data || err.message
+            err.response?.data || err.message,
           );
           Alert.alert("Error", "Gagal menghapus transaksi. Coba lagi nanti.");
         }
@@ -330,6 +364,31 @@ export const useTransactionStore = create<TransactionState>()(
 
       setSelectedDate: (date: string) => {
         set({ selectedDate: date });
+      },
+
+      initSelectedDate: async () => {
+        if (isSelectedDateInitialized) return;
+        if (initSelectedDatePromise) {
+          await initSelectedDatePromise;
+          return;
+        }
+
+        initSelectedDatePromise = (async () => {
+          const { settings, getUserSettings } = useUserSettingStore.getState();
+
+          if (settings?.closing_date == null) {
+            await getUserSettings();
+          }
+
+          set({ selectedDate: getDefaultSelectedDate() });
+          isSelectedDateInitialized = true;
+        })();
+
+        try {
+          await initSelectedDatePromise;
+        } finally {
+          initSelectedDatePromise = null;
+        }
       },
     }),
     {
@@ -376,6 +435,16 @@ export const useTransactionStore = create<TransactionState>()(
           console.log("✅ TransactionStore rehydrated");
         }
       },
-    }
-  )
+    },
+  ),
 );
+
+// Sync selectedDate whenever closing_date changes
+useUserSettingStore.subscribe((state, prevState) => {
+  if (state.settings?.closing_date !== prevState.settings?.closing_date) {
+    isSelectedDateInitialized = true;
+    useTransactionStore.setState({
+      selectedDate: getDefaultSelectedDate(),
+    });
+  }
+});
