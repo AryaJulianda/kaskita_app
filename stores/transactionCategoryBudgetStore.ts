@@ -1,10 +1,11 @@
 import { api } from "@/utils/api";
 import { Alert } from "react-native";
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { persist } from "@/utils/zustandMiddleware";
 import { useTransactionCategoryStore } from "./transactionCategoryStore";
 
-import * as FileSystem from "expo-file-system/legacy"; // ✅ gunakan modul legacy
+import * as FileSystem from "@/utils/fileStorage";
+// ✅ gunakan modul legacy
 import { router } from "expo-router";
 const fileUri =
   FileSystem.documentDirectory + "transaction-category-budget-storage.json";
@@ -80,7 +81,7 @@ export const useTransactionCategoryBudgetStore =
             getDetailTransactionCategory(payload.transaction_category_id);
 
             set({ isLoading: false });
-            Alert.alert("Success", "Budget kategori berhasil diupdate ✅");
+            // Alert.alert("Success", "Budget kategori berhasil diupdate ✅");
           } catch (err: any) {
             set({ isLoading: false });
             console.log(

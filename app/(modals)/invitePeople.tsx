@@ -166,7 +166,7 @@ ${invitationPasscode}`;
 
             {/* Tombol buka modal */}
             <Button
-              style={{ backgroundColor: colors.skyblue }}
+              style={{ backgroundColor: colors.blue }}
               onPress={() => setIsJoinModalVisible(true)}
             >
               <Typo color={colors.black} fontWeight={"700"}>
@@ -234,7 +234,7 @@ ${invitationPasscode}`;
 
                     <Button
                       style={{
-                        backgroundColor: colors.skyblue,
+                        backgroundColor: colors.blue,
                         marginTop: spacingY._20,
                       }}
                       onPress={handleJoin}

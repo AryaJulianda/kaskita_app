@@ -1,11 +1,12 @@
 import { api } from "@/utils/api";
 import { Alert } from "react-native";
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { persist } from "@/utils/zustandMiddleware";
 import { useImageStore } from "./imageStore";
 import { TransactionCategory } from "./transactionCategoryStore";
 
-import * as FileSystem from "expo-file-system/legacy"; // ✅ gunakan modul legacy
+import * as FileSystem from "@/utils/fileStorage";
+// ✅ gunakan modul legacy
 import { useUserSettingStore } from "./userSettingStore";
 const fileUri = FileSystem.documentDirectory + "transactions-storage.json";
 let isSelectedDateInitialized = false;
@@ -285,7 +286,7 @@ export const useTransactionStore = create<TransactionState>()(
             isLoading: false,
           }));
 
-          Alert.alert("Success", "Transaksi berhasil ditambahkan ✅");
+          // Alert.alert("Success", "Transaksi berhasil ditambahkan ✅");
         } catch (err: any) {
           set({ isLoading: false });
           console.log(
@@ -327,7 +328,7 @@ export const useTransactionStore = create<TransactionState>()(
             isLoading: false,
           });
 
-          Alert.alert("Success", "Transaksi berhasil diupdate ✅");
+          // Alert.alert("Success", "Transaksi berhasil diupdate ✅");
         } catch (err: any) {
           set({ isLoading: false });
           console.log(
@@ -351,7 +352,7 @@ export const useTransactionStore = create<TransactionState>()(
             throw new Error(data.message || "Gagal menghapus transaksi");
           }
 
-          Alert.alert("Success", "Transaksi berhasil dihapus ✅");
+          // Alert.alert("Success", "Transaksi berhasil dihapus ✅");
         } catch (err: any) {
           set({ isLoading: false });
           console.log(

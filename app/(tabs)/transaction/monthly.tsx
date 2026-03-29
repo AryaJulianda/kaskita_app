@@ -82,7 +82,7 @@ const Monthly = () => {
             minimumFractionDigits: 2,
           }).format(item.expense)}
         </Typo>
-        <Typo size={14} fontWeight={600} color={colors.skyblue}>
+        <Typo size={14} fontWeight={600} color={colors.blue}>
           {new Intl.NumberFormat("id-ID", {
             style: "currency",
             currency: "IDR",
@@ -103,7 +103,7 @@ const Monthly = () => {
           <View style={styles.summaryRow}>
             <SummaryItem label="Income" value={income} color={colors.green} />
             <SummaryItem label="Expenses" value={expense} color={colors.rose} />
-            <SummaryItem label="Total" value={total} color={colors.skyblue} />
+            <SummaryItem label="Total" value={total} color={colors.blue} />
           </View>
           <FlatList
             data={monthlySummaries}

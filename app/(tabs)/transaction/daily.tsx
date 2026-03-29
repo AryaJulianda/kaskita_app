@@ -174,9 +174,9 @@ const Daily = () => {
         <>
           {/* Summary Row */}
           <View style={styles.summaryRow}>
-            <SummaryItem label="Income" value={transactionSummary.income} color={colors.primary} />
+            <SummaryItem label="Income" value={transactionSummary.income} color={colors.green} />
             <SummaryItem label="Expenses" value={transactionSummary.expense} color={colors.rose} />
-            <SummaryItem label="Total" value={transactionSummary.balance} color={colors.skyblue} />
+            <SummaryItem label="Total" value={transactionSummary.balance} color={colors.blue} />
           </View>
           {/* Transaction List */}
           <FlatList

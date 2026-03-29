@@ -1,8 +1,8 @@
 import { api } from "@/utils/api";
-import * as FileSystem from "expo-file-system/legacy";
+import * as FileSystem from "@/utils/fileStorage";
 import { Alert } from "react-native";
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { persist } from "@/utils/zustandMiddleware";
 
 const fileUri = FileSystem.documentDirectory + "loan-storage.json";
 
@@ -145,7 +145,7 @@ export const useLoanStore = create<LoanState>()(
           if (data.message !== "success") {
             throw new Error(data.message || "Delete Loan Failed");
           }
-          Alert.alert("Success", "Delete Loan Successful");
+          // Alert.alert("Success", "Delete Loan Successful");
         } catch (err: any) {
           set({ isLoading: false });
           console.log("Delete Loan Error:", err.response?.data || err.message);

@@ -26,7 +26,7 @@ const Register = () => {
       Alert.alert("Sign up", "Please fill all the fields");
       return;
     }
-    registerUser(form.name, form.email, form.password);
+    await registerUser(form.name, form.email, form.password);
   };
 
   return (

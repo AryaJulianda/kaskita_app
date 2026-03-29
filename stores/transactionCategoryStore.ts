@@ -1,9 +1,10 @@
 import { api } from "@/utils/api";
 import { Alert } from "react-native";
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { persist } from "@/utils/zustandMiddleware";
 
-import * as FileSystem from "expo-file-system/legacy"; // ✅ gunakan modul legacy
+import * as FileSystem from "@/utils/fileStorage";
+// ✅ gunakan modul legacy
 const fileUri =
   FileSystem.documentDirectory + "transactions-category-storage.json";
 
@@ -170,7 +171,7 @@ export const useTransactionCategoryStore = create<TransactionCategoryState>()(
             isLoading: false,
           }));
 
-          Alert.alert("Success", "Category Transaksi berhasil ditambahkan ✅");
+          // Alert.alert("Success", "Category Transaksi berhasil ditambahkan ✅");
         } catch (err: any) {
           set({ isLoading: false });
           console.log(
@@ -199,7 +200,7 @@ export const useTransactionCategoryStore = create<TransactionCategoryState>()(
             isLoading: false,
           });
 
-          Alert.alert("Success", "Category Transaksi berhasil diupdate ✅");
+          // Alert.alert("Success", "Category Transaksi berhasil diupdate ✅");
         } catch (err: any) {
           set({ isLoading: false });
           console.log(
@@ -232,7 +233,7 @@ export const useTransactionCategoryStore = create<TransactionCategoryState>()(
             );
           }
 
-          Alert.alert("Success", "Category Transaksi berhasil dihapus ✅");
+          // Alert.alert("Success", "Category Transaksi berhasil dihapus ✅");
         } catch (err: any) {
           set({ isLoading: false });
           console.log(

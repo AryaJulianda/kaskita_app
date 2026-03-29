@@ -19,7 +19,7 @@ export const useVoiceTransactionStore = create<VoiceTransactionState>(
     uploadVoice: async (
       uri,
       filename = "voice-transaction.m4a",
-      mime = "audio/m4a"
+      mime = "audio/m4a",
     ) => {
       try {
         set({ isLoading: true });
@@ -42,7 +42,7 @@ export const useVoiceTransactionStore = create<VoiceTransactionState>(
         const end = Date.now();
         console.log(`CREATE TRANSACTION BY AI: ${end - start} ms`);
 
-        Alert.alert("Success", "Transaksi berhasil ditambahkan via suara ✅");
+        // Alert.alert("Success", "Transaksi berhasil ditambahkan via suara ✅");
         router.push("/transaction/daily");
       } catch (err: any) {
         console.error("Upload voice error:", err.response?.data || err.message);
@@ -51,5 +51,5 @@ export const useVoiceTransactionStore = create<VoiceTransactionState>(
         set({ isLoading: false });
       }
     },
-  })
+  }),
 );

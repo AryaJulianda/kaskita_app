@@ -1,12 +1,11 @@
 import { KASKITA_BACKEND } from "@/constants";
 import { registerForPushNotifications } from "@/utils/registerForPushNotification";
+import * as SecureStore from "@/utils/secureStorage";
+import { persist } from "@/utils/zustandMiddleware";
 import axios from "axios";
 import { router } from "expo-router";
-import * as SecureStore from "expo-secure-store";
 import { Alert } from "react-native";
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
-import { useImageStore } from "./imageStore";
 
 type User = {
   id: string;
@@ -68,9 +67,12 @@ api.interceptors.request.use(async (config) => {
     if (isExpired) {
       try {
         console.log("USE REFRESH TOKEN");
-        const { data } = await refreshApi.post("/api/refresh", null, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const { user } = useAuthStore.getState();
+        const { data } = await refreshApi.post(
+          "/api/refresh",
+          { user_id: user?.id },
+          { headers: { Authorization: `Bearer ${token}` } },
+        );
 
         const expiryTime = Date.now() + data.expires_in * 1000;
         useAuthStore.setState({
@@ -124,7 +126,6 @@ export const useAuthStore = create<AuthState>()(
             "Error",
             err.response?.data?.message ?? "Try again later",
           );
-          throw err;
         }
       },
 
@@ -132,7 +133,6 @@ export const useAuthStore = create<AuthState>()(
         accessToken: string,
         photoProfile?: string | null,
       ) => {
-        const { uploadImage } = useImageStore.getState();
         console.log("OAUth GOOGLE PROCESS >> START");
         try {
           console.log(
@@ -160,6 +160,8 @@ export const useAuthStore = create<AuthState>()(
           });
 
           if (photoProfile) {
+            const { useImageStore } = await import("./imageStore");
+            const { uploadImage } = useImageStore.getState();
             const img = await uploadImage({
               uri: photoProfile as string,
               table_name: "users",
@@ -217,7 +219,6 @@ export const useAuthStore = create<AuthState>()(
           console.log("Login error:", err.response?.data);
           set({ isLoading: false });
           Alert.alert("Error", err.response?.data?.message ?? "Login failed");
-          throw err;
         }
       },
 

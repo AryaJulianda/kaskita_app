@@ -1,25 +1,22 @@
 import { scale, verticalScale } from "@/utils/styling";
 
 export const colors = {
-  // primary: "#a3e635",
+  primary: "#262626",
+  primaryLight: "#525252",
+  primaryDark: "#171717",
   bgLight: "#fff",
-  primary: "#83e414ff",
-  skyblue: "#64f4ff",
-  primaryLight: "#0ea5e9",
-  primaryDark: "#0369a1",
   text: "#fff",
   textLight: "#0d0c22",
-  // textLight: "#e5e5e5",
-  // textLighter: "#d4d4d4",
   white: "#fff",
   black: "#000",
-  rose: "#ff3b3b",
-  blue: "#04acba",
-  green: "#16a34a",
-  purple: "#7c3aed", // utama — cerah tapi tidak bentrok
-  purpleLight: "#a78bfa", // untuk background / highlights
-  purpleDark: "#5b21b6", // untuk border / accent gelap
-  purpleAccent: "#f3e8ff", // very light untuk bg atau overlay
+  skyblue: "#525252",
+  rose: "#dc2626",
+  blue: "#0369a1",
+  green: "#15803d",
+  purple: "#6d28d9",
+  purpleLight: "#7c38e0",
+  purpleDark: "#5b21b6",
+  purpleAccent: "#f5f5f5",
   neutral50: "#fafafa",
   neutral100: "#f5f5f5",
   neutral200: "#e5e5e5",

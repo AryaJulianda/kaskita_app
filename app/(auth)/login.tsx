@@ -25,7 +25,7 @@ const login = () => {
       return;
     }
 
-    loginUser(form.email, form.password);
+    await loginUser(form.email, form.password);
   };
 
   return (

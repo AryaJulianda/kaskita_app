@@ -1,8 +1,8 @@
 import { api } from "@/utils/api";
-import * as FileSystem from "expo-file-system/legacy";
+import * as FileSystem from "@/utils/fileStorage";
 import { Alert } from "react-native";
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { persist } from "@/utils/zustandMiddleware";
 
 // ===== File untuk penyimpanan lokal =====
 const fileUri = FileSystem.documentDirectory + "user-setting-storage.json";

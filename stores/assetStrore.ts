@@ -1,9 +1,9 @@
 import { AssetFormData } from "@/components/Form/AssetForm";
 import { api } from "@/utils/api";
-import * as FileSystem from "expo-file-system/legacy";
+import * as FileSystem from "@/utils/fileStorage";
 import { Alert } from "react-native";
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { persist } from "@/utils/zustandMiddleware";
 
 // ===== File untuk penyimpanan lokal =====
 const fileUri = FileSystem.documentDirectory + "asset-storage.json";
@@ -175,7 +175,7 @@ export const useAssetStore = create<AssetState>()(
           if (data.message !== "success") {
             throw new Error(data.message || "Delete Asset Failed");
           }
-          Alert.alert("Success", "Delete Asset Successful");
+          // Alert.alert("Success", "Delete Asset Successful");
         } catch (err: any) {
           set({ isLoading: false });
           console.log("Delete Asset Error:", err.response?.data || err.message);

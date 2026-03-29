@@ -19,7 +19,13 @@ import {
   UserIcon,
 } from "phosphor-react-native";
 import React, { useCallback } from "react";
-import { Alert, StyleSheet, TouchableOpacity, View } from "react-native";
+import {
+  Alert,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 
 const Profile = () => {
@@ -62,43 +68,43 @@ const Profile = () => {
       title: "Edit Profile",
       icon: <UserIcon size={26} color={colors.white} weight="fill" />,
       routeName: "/profileModal",
-      bgColor: "#6366f1",
+      bgColor: colors.primary,
     },
     {
       title: "Transaksi Rutin",
       icon: <RepeatIcon size={26} color={colors.white} weight="fill" />,
       routeName: "/routineTransactionModal",
-      bgColor: "#6366f1",
+      bgColor: colors.primary,
     },
     {
       title: "Group",
       icon: <HandshakeIcon size={26} color={colors.white} weight="fill" />,
       routeName: "/invitePeople",
-      bgColor: "#6366f1",
+      bgColor: colors.primary,
     },
     {
       title: "Preference",
       icon: <FadersIcon size={26} color={colors.white} weight="fill" />,
       routeName: "/preference",
-      bgColor: colors.skyblue,
+      bgColor: colors.primary,
     },
     {
       title: "Settings",
       icon: <GearSixIcon size={26} color={colors.white} weight="fill" />,
       // routeName: "/profileModal",
-      bgColor: "#059669",
+      bgColor: colors.primary,
     },
     {
       title: "Privacy Policy",
       icon: <LockIcon size={26} color={colors.white} weight="fill" />,
       // routeName: "/profileModal",
-      bgColor: colors.neutral600,
+      bgColor: colors.primary,
     },
     {
       title: "Logout",
       icon: <PowerIcon size={26} color={colors.white} weight="fill" />,
       // routeName: "/profileModal",
-      bgColor: "#e11d48",
+      bgColor: colors.primary,
     },
   ];
 
@@ -114,28 +120,30 @@ const Profile = () => {
         {/* user info */}
         <View style={styles.userInfo}>
           {/* avatar */}
-          <View>
-            <Image
-              source={getProfileImage(user?.image)}
-              style={styles.avatar}
-              contentFit="cover"
-              transition={100}
-            />
-          </View>
+          <Image
+            source={getProfileImage(user?.image)}
+            style={styles.avatar}
+            contentFit="cover"
+            transition={100}
+          />
 
           {/* name & email */}
           <View style={styles.nameContainer}>
-            <Typo size={24} fontWeight={"600"} color={colors.neutral400}>
+            <Typo size={20} fontWeight={"600"} color={colors.neutral400}>
               {user?.name}
             </Typo>
-            <Typo size={15} color={colors.neutral400}>
+            <Typo size={13} color={colors.neutral400}>
               {user?.email}
             </Typo>
           </View>
         </View>
 
         {/* account options */}
-        <View style={styles.accountOption}>
+        <ScrollView
+          style={styles.accountOption}
+          contentContainerStyle={styles.accountOptionContent}
+          showsVerticalScrollIndicator={false}
+        >
           {accountOption.map((item, index) => {
             return (
               <Animated.View
@@ -175,7 +183,7 @@ const Profile = () => {
               </Animated.View>
             );
           })}
-        </View>
+        </ScrollView>
       </View>
     </ScreenWrapper>
   );
@@ -189,19 +197,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacingX._20,
   },
   userInfo: {
-    marginTop: verticalScale(30),
+    marginTop: verticalScale(8),
+    flexDirection: "row",
     alignItems: "center",
-    gap: spacingY._15,
+    gap: spacingX._12,
+    paddingVertical: spacingY._10,
   },
   avatarContainer: {
     position: "relative",
     alignSelf: "center",
   },
   avatar: {
-    alignSelf: "center",
     backgroundColor: colors.neutral300,
-    height: verticalScale(135),
-    width: verticalScale(135),
+    height: verticalScale(70),
+    width: verticalScale(70),
     borderRadius: 200,
   },
   editIcon: {
@@ -218,8 +227,8 @@ const styles = StyleSheet.create({
     padding: 5,
   },
   nameContainer: {
-    gap: verticalScale(4),
-    alignItems: "center",
+    gap: verticalScale(2),
+    flex: 1,
   },
   listIcon: {
     height: verticalScale(44),
@@ -231,14 +240,24 @@ const styles = StyleSheet.create({
     borderCurve: "continuous",
   },
   listItem: {
-    marginBottom: verticalScale(17),
+    marginBottom: verticalScale(5),
   },
   accountOption: {
-    marginTop: spacingY._35,
+    marginTop: spacingY._12,
+    flex: 1,
+  },
+  accountOptionContent: {
+    paddingBottom: spacingY._40,
   },
   flexRow: {
     flexDirection: "row",
     alignItems: "center",
     gap: spacingX._10,
+    backgroundColor: colors.white,
+    borderRadius: radius._15,
+    borderWidth: 1,
+    borderColor: colors.neutral200,
+    paddingHorizontal: spacingX._10,
+    paddingVertical: spacingY._10,
   },
 });

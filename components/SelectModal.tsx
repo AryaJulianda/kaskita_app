@@ -113,7 +113,7 @@ const styles = StyleSheet.create({
   },
   closeBtn: {
     marginTop: 16,
-    backgroundColor: colors.skyblue,
+    backgroundColor: colors.blue,
     padding: 12,
     borderRadius: 8,
     alignItems: "center",

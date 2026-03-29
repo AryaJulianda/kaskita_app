@@ -1,10 +1,9 @@
 import { api } from "@/utils/api";
 import { Alert } from "react-native";
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { persist } from "@/utils/zustandMiddleware";
 
-import * as FileSystem from "expo-file-system/legacy";
-
+import * as FileSystem from "@/utils/fileStorage";
 const fileUri =
   FileSystem.documentDirectory + "routine-transactions-storage.json";
 
@@ -147,7 +146,7 @@ export const useRoutineTransactionStore = create<RoutineTransactionState>()(
             isLoading: false,
           }));
 
-          Alert.alert("Success", "Transaksi rutin berhasil ditambahkan ✅");
+          // Alert.alert("Success", "Transaksi rutin berhasil ditambahkan ✅");
         } catch (err: any) {
           set({ isLoading: false });
           console.log(
@@ -177,7 +176,7 @@ export const useRoutineTransactionStore = create<RoutineTransactionState>()(
           );
 
           set({ isLoading: false });
-          Alert.alert("Success", "Transaksi rutin berhasil diupdate ✅");
+          // Alert.alert("Success", "Transaksi rutin berhasil diupdate ✅");
         } catch (err: any) {
           set({ isLoading: false });
           console.log(
@@ -203,7 +202,7 @@ export const useRoutineTransactionStore = create<RoutineTransactionState>()(
             isLoading: false,
           }));
 
-          Alert.alert("Success", "Transaksi rutin berhasil dihapus ✅");
+          // Alert.alert("Success", "Transaksi rutin berhasil dihapus ✅");
         } catch (err: any) {
           set({ isLoading: false });
           console.log(
@@ -241,7 +240,7 @@ export const useRoutineTransactionStore = create<RoutineTransactionState>()(
                 : state.detailRoutineTransaction,
           }));
 
-          Alert.alert("Success", "Transaksi rutin berhasil digenerate ✅");
+          // Alert.alert("Success", "Transaksi rutin berhasil digenerate ✅");
         } catch (err: any) {
           console.log(
             "Generate Routine Transaction Error:",

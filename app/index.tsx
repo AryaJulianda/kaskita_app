@@ -12,10 +12,10 @@ const index = () => {
     const init = async () => {
       if (token) {
         console.log("TOKEN EXIST", token);
-        router.replace("/transaction/daily");
+        router.replace("/(tabs)/transaction/daily");
       } else {
         console.log("❌ NO TOKEN, redirect to login");
-        router.replace("/login");
+        router.replace("/(auth)/login");
       }
     };
 
