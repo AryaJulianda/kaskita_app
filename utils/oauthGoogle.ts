@@ -3,12 +3,12 @@ import {
   GoogleSignin,
   statusCodes,
 } from "@react-native-google-signin/google-signin";
-import { Alert } from "react-native";
+import { Alert, Platform } from "react-native";
 
 type GoogleSignInOptions = {
   onSuccess: (
     accessToken: string,
-    photoProfile?: string | null
+    photoProfile?: string | null,
   ) => Promise<void>;
 };
 
@@ -16,15 +16,28 @@ export const handleGoogleSignIn = async ({
   onSuccess,
 }: GoogleSignInOptions) => {
   try {
-    GoogleSignin.configure({
+    const googleSignInConfig: {
+      webClientId: string;
+      iosClientId?: string;
+      offlineAccess: boolean;
+      forceCodeForRefreshToken: boolean;
+    } = {
       webClientId: googleConfig.webClientId,
       offlineAccess: true,
       forceCodeForRefreshToken: true,
-    });
+    };
 
-    await GoogleSignin.hasPlayServices({
-      showPlayServicesUpdateDialog: true,
-    });
+    if (googleConfig.iosClientId?.trim()) {
+      googleSignInConfig.iosClientId = googleConfig.iosClientId;
+    }
+
+    GoogleSignin.configure(googleSignInConfig);
+
+    if (Platform.OS === "android") {
+      await GoogleSignin.hasPlayServices({
+        showPlayServicesUpdateDialog: true,
+      });
+    }
 
     const userInfo = await GoogleSignin.signIn();
     const photoProfile = userInfo.data?.user.photo;
