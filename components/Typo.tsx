@@ -2,7 +2,7 @@ import { colors, fontFamily } from "@/constants/theme";
 import { TypoProps } from "@/types";
 import { verticalScale } from "@/utils/styling";
 import React from "react";
-import { StyleSheet, Text, TextStyle } from "react-native";
+import { Text, TextStyle } from "react-native";
 
 const Typo = ({
   size,
@@ -10,23 +10,22 @@ const Typo = ({
   fontWeight = "400",
   children,
   style,
+  className,
   textProps = {},
 }: TypoProps) => {
   // mapping fontWeight ke Inter
 
   const textStyle: TextStyle = {
-    fontSize: size ? verticalScale(size) : verticalScale(18),
+    fontSize: size ? verticalScale(size) : verticalScale(7),
     color,
     fontFamily: fontFamily(fontWeight),
   };
 
   return (
-    <Text style={[textStyle, style]} {...textProps}>
+    <Text className={className} style={[textStyle, style]} {...textProps}>
       {children}
     </Text>
   );
 };
 
 export default Typo;
-
-const styles = StyleSheet.create({});

@@ -5,7 +5,7 @@ import { colors } from "@/constants/theme";
 import { useMonthlyTransactionStore } from "@/stores/monthlyTransactionStore";
 import { useFocusEffect } from "expo-router";
 import React, { useCallback, useMemo, useState } from "react";
-import { FlatList, RefreshControl, StyleSheet, View } from "react-native";
+import { FlatList, RefreshControl, View } from "react-native";
 
 function parseMonthYear(value: string) {
   const [month, year] = value.split("-");
@@ -20,7 +20,7 @@ const Monthly = () => {
   useFocusEffect(
     useCallback(() => {
       getMonthlySummaries();
-    }, [getMonthlySummaries])
+    }, [getMonthlySummaries]),
   );
 
   const onRefresh = async () => {
@@ -37,9 +37,9 @@ const Monthly = () => {
           (typeof item.income === "number"
             ? item.income
             : parseFloat(item.income) || 0),
-        0
+        0,
       ),
-    [monthlySummaries]
+    [monthlySummaries],
   );
   const expense = useMemo(
     () =>
@@ -49,24 +49,24 @@ const Monthly = () => {
           (typeof item.expense === "number"
             ? item.expense
             : parseFloat(item.expense) || 0),
-        0
+        0,
       ),
-    [monthlySummaries]
+    [monthlySummaries],
   );
   const total = income - expense;
 
   const renderItem = ({ item }: any) => (
-    <View style={styles.card}>
-      <View style={{ flex: 1 }}>
-        <Typo fontWeight={600} size={16}>
+    <View className="mb-3 flex-row items-center justify-between rounded-lg bg-white px-3 py-3 shadow">
+      <View className="flex-1">
+        <Typo fontWeight={600}>
           {parseMonthYear(item.month).toLocaleString("en-US", {
             month: "short",
             year: "numeric",
           })}
         </Typo>
       </View>
-      <View style={styles.cardRight}>
-        <Typo size={14} fontWeight={600} color={colors.green}>
+      <View className="flex-col items-end justify-between">
+        <Typo fontWeight={600} color={colors.green}>
           +
           {new Intl.NumberFormat("id-ID", {
             style: "currency",
@@ -74,7 +74,7 @@ const Monthly = () => {
             minimumFractionDigits: 2,
           }).format(item.income)}
         </Typo>
-        <Typo size={14} fontWeight={600} color={colors.rose}>
+        <Typo fontWeight={600} color={colors.rose}>
           -
           {new Intl.NumberFormat("id-ID", {
             style: "currency",
@@ -82,7 +82,7 @@ const Monthly = () => {
             minimumFractionDigits: 2,
           }).format(item.expense)}
         </Typo>
-        <Typo size={14} fontWeight={600} color={colors.blue}>
+        <Typo fontWeight={600} color={colors.blue}>
           {new Intl.NumberFormat("id-ID", {
             style: "currency",
             currency: "IDR",
@@ -98,9 +98,9 @@ const Monthly = () => {
       {isLoading ? (
         <Loading />
       ) : (
-        <>
+        <View className="flex-1 items-center">
           {/* Summary Row */}
-          <View style={styles.summaryRow}>
+          <View className="mb-2 mt-2 w-full flex-row items-center justify-between">
             <SummaryItem label="Income" value={income} color={colors.green} />
             <SummaryItem label="Expenses" value={expense} color={colors.rose} />
             <SummaryItem label="Total" value={total} color={colors.blue} />
@@ -109,17 +109,17 @@ const Monthly = () => {
             data={monthlySummaries}
             keyExtractor={(item) => item.month}
             renderItem={renderItem}
-            contentContainerStyle={styles.list}
+            contentContainerClassName="pb-24 pt-1"
             refreshControl={
               <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
             }
             ListEmptyComponent={
-              <Typo color="gray" style={{ textAlign: "center", marginTop: 20 }}>
+              <Typo className="mt-5 text-center text-xs text-neutral-500">
                 Belum ada data bulanan
               </Typo>
             }
           />
-        </>
+        </View>
       )}
     </ScreenWrapper>
   );
@@ -135,11 +135,9 @@ const SummaryItem = ({
   value: number;
   color: string;
 }) => (
-  <View style={styles.summaryItem}>
-    <Typo fontWeight={"medium"} size={13}>
-      {label}
-    </Typo>
-    <Typo fontWeight={"semibold"} color={color} size={13}>
+  <View className="flex-1 items-center justify-center">
+    <Typo fontWeight={"medium"}>{label}</Typo>
+    <Typo fontWeight={"semibold"} color={color} size={6}>
       {new Intl.NumberFormat("id-ID", {
         style: "currency",
         currency: "IDR",
@@ -150,43 +148,3 @@ const SummaryItem = ({
 );
 
 export default Monthly;
-
-const styles = StyleSheet.create({
-  list: {
-    paddingBottom: 100,
-    paddingTop: 5,
-  },
-  card: {
-    padding: 12,
-    borderRadius: 8,
-    backgroundColor: colors.white,
-    marginBottom: 10,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  cardRight: {
-    alignItems: "flex-end",
-    flexDirection: "column",
-    justifyContent: "space-between",
-  },
-  summaryRow: {
-    flexDirection: "row",
-    backgroundColor: "transparent",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingVertical: 3,
-    marginTop: 6,
-    marginBottom: 8,
-    borderRadius: 8,
-  },
-  summaryItem: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});

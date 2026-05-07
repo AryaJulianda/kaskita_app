@@ -1,7 +1,6 @@
 import Typo from "@/components/Typo";
 import { colors } from "@/constants/theme";
 import { useMonthlyTransactionStore } from "@/stores/monthlyTransactionStore";
-import { verticalScale } from "@/utils/styling";
 import { CaretLeftIcon, CaretRightIcon } from "phosphor-react-native";
 import React, { useEffect, useRef, useState } from "react";
 import { Modal, ScrollView, TouchableOpacity, View } from "react-native";
@@ -64,33 +63,17 @@ export default function YearPicker({
 
   return (
     <>
-      <View
-        style={{
-          padding: 5,
-          width: 120,
-          flexDirection: "row",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
+      <View className="w-28 flex-row items-center justify-between px-1 py-1">
         <TouchableOpacity onPress={handlePrev}>
-          <CaretLeftIcon
-            size={verticalScale(22)}
-            color={colors.neutral800}
-            weight="bold"
-          />
+          <CaretLeftIcon size={18} color={colors.neutral800} weight="bold" />
         </TouchableOpacity>
         <TouchableOpacity onPress={openPicker}>
-          <Typo size={20} fontWeight={"medium"}>
+          <Typo size={10} fontWeight={"medium"}>
             {value}
           </Typo>
         </TouchableOpacity>
         <TouchableOpacity onPress={handleNext}>
-          <CaretRightIcon
-            size={verticalScale(22)}
-            color={colors.neutral800}
-            weight="bold"
-          />
+          <CaretRightIcon size={18} color={colors.neutral800} weight="bold" />
         </TouchableOpacity>
       </View>
       <Modal
@@ -99,24 +82,9 @@ export default function YearPicker({
         animationType="slide"
         onRequestClose={() => setVisible(false)}
       >
-        <View
-          style={{
-            flex: 1,
-            backgroundColor: "rgba(0,0,0,0.2)",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <View
-            style={{
-              backgroundColor: colors.white,
-              borderRadius: 12,
-              padding: 20,
-              width: 300,
-              alignItems: "center",
-            }}
-          >
-            <Typo size={16} fontWeight="bold" style={{ marginBottom: 12 }}>
+        <View className="flex-1 items-center justify-center bg-black/20">
+          <View className="w-72 items-center rounded-xl bg-white p-5">
+            <Typo size={14} fontWeight="bold" style={{ marginBottom: 12 }}>
               Pilih Tahun
             </Typo>
             <ScrollView
@@ -124,19 +92,15 @@ export default function YearPicker({
               showsHorizontalScrollIndicator={false}
               ref={scrollRef}
             >
-              <View style={{ flexDirection: "row" }}>
+              <View className="flex-row">
                 {years.map((year) => (
                   <TouchableOpacity
                     key={year}
-                    style={{
-                      margin: 6,
-                      padding: 10,
-                      borderRadius: 6,
-                      backgroundColor:
-                        year === selectedYear
-                          ? colors.primary
-                          : colors.neutral100,
-                    }}
+                    className={
+                      year === selectedYear
+                        ? "m-1.5 rounded-md bg-neutral-900 px-3 py-2"
+                        : "m-1.5 rounded-md bg-neutral-100 px-3 py-2"
+                    }
                     onPress={() => setSelectedYear(year)}
                   >
                     <Typo
@@ -150,44 +114,27 @@ export default function YearPicker({
                 ))}
               </View>
             </ScrollView>
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "center",
-                width: "100%",
-                gap: 10,
-              }}
-            >
+            <View className="w-full flex-row items-center justify-between gap-2">
               <TouchableOpacity
-                style={{
-                  width: "50%",
-                  marginTop: 18,
-                  paddingHorizontal: 24,
-                  paddingVertical: 10,
-                  borderRadius: 8,
-                  backgroundColor: colors.neutral100,
-                }}
+                className="mt-4 w-1/2 rounded-lg bg-neutral-100 px-6 py-2"
                 onPress={() => setVisible(false)}
               >
-                <Typo color={colors.neutral800} style={{ textAlign: "center" }}>
+                <Typo
+                  size={12}
+                  color={colors.neutral800}
+                  style={{ textAlign: "center" }}
+                >
                   Tutup
                 </Typo>
               </TouchableOpacity>
               <TouchableOpacity
-                style={{
-                  width: "50%",
-                  marginTop: 18,
-                  backgroundColor: colors.primary,
-                  paddingHorizontal: 24,
-                  paddingVertical: 10,
-                  borderRadius: 8,
-                }}
+                className="mt-4 w-1/2 rounded-lg bg-neutral-900 px-6 py-2"
                 onPress={handleConfirm}
               >
                 <Typo
                   color={colors.white}
                   fontWeight="bold"
+                  size={12}
                   style={{ textAlign: "center" }}
                 >
                   Confirm

@@ -1,15 +1,9 @@
-import Button from "@/components/Button";
-import Input from "@/components/Input";
 import ScreenWrapper from "@/components/ScreenWrapper";
-import Typo from "@/components/Typo";
-import { colors, spacingX, spacingY } from "@/constants/theme";
 import { useAuthStore } from "@/stores/authStore";
 import { handleGoogleSignIn } from "@/utils/oauthGoogle";
-import { verticalScale } from "@/utils/styling";
 import { router } from "expo-router";
-import { AtIcon, LockIcon } from "phosphor-react-native";
 import React, { useState } from "react";
-import { Alert, Pressable, StyleSheet, View } from "react-native";
+import { Alert, Pressable, Text, TextInput, View } from "react-native";
 
 const login = () => {
   const { oauthGoogle, loginUser, isLoading } = useAuthStore();
@@ -30,79 +24,75 @@ const login = () => {
 
   return (
     <ScreenWrapper>
-      <View style={styles.container}>
-        <View style={{ gap: 5, marginTop: spacingY._20 }}>
-          <Typo size={30} fontWeight={"800"}>
-            Hey,
-          </Typo>
-          <Typo size={30} fontWeight={"800"}>
-            Welcome Back
-          </Typo>
-        </View>
+      <View className="flex-1 items-center px-5">
+        <View className="w-full max-w-[420px]">
+          <View className="mt-5 gap-1">
+            <Text className="text-2xl font-extrabold text-neutral-900">
+              Hey,
+            </Text>
+            <Text className="text-2xl font-extrabold text-neutral-900">
+              Welcome Back
+            </Text>
+          </View>
 
-        <View style={styles.form}>
-          <Typo size={16} color={colors.textLight}>
-            Login now to track all your expenses
-          </Typo>
-          <Input
-            placeholder="Enter your email address"
-            icon={
-              <AtIcon
-                size={verticalScale(26)}
-                color={colors.neutral300}
-                weight="fill"
-              />
-            }
-            onChangeText={(value) => setForm({ ...form, email: value })}
-          />
-          <Input
-            secureTextEntry
-            placeholder="Enter your password"
-            icon={
-              <LockIcon
-                size={verticalScale(26)}
-                color={colors.neutral300}
-                weight="fill"
-              />
-            }
-            onChangeText={(value) => setForm({ ...form, password: value })}
-          />
+          <View className="mt-6 gap-4">
+            <Text className="text-sm text-neutral-600">
+              Login now to track all your expenses
+            </Text>
+            <TextInput
+              className="h-12 rounded-xl border border-neutral-200 px-4 text-base text-neutral-900"
+              placeholder="Enter your email address"
+              placeholderTextColor="#9ca3af"
+              autoCapitalize="none"
+              keyboardType="email-address"
+              onChangeText={(value) => setForm({ ...form, email: value })}
+            />
+            <TextInput
+              className="h-12 rounded-xl border border-neutral-200 px-4 text-base text-neutral-900"
+              placeholder="Enter your password"
+              placeholderTextColor="#9ca3af"
+              secureTextEntry
+              onChangeText={(value) => setForm({ ...form, password: value })}
+            />
 
-          <Typo size={14} color={colors.text} style={{ alignSelf: "flex-end" }}>
-            Forgot Password?
-          </Typo>
+            <Text className="text-right text-xs text-neutral-600">
+              Forgot Password?
+            </Text>
 
-          <Button onPress={handleSubmit} loading={isLoading}>
-            <Typo fontWeight={700} color={colors.black} size={18}>
-              Sign In
-            </Typo>
-          </Button>
+            <Pressable
+              onPress={handleSubmit}
+              disabled={isLoading}
+              className="h-12 items-center justify-center rounded-xl bg-neutral-900"
+            >
+              <Text className="text-base font-semibold text-white">
+                {isLoading ? "Loading..." : "Sign In"}
+              </Text>
+            </Pressable>
 
-          {/* Divider */}
-          <Typo style={{ textAlign: "center", marginVertical: 10 }}>or</Typo>
+            <Text className="text-center text-xs text-neutral-500">or</Text>
 
-          <Button
-            loading={isLoading}
-            onPress={() => handleGoogleSignIn({ onSuccess: oauthGoogle })}
-            style={{
-              backgroundColor: "#fff",
-              borderWidth: 1,
-              borderColor: colors.neutral300,
-            }}
-          >
-            <Typo fontWeight={700} color="#000" size={18}>
-              Sign In with Google
-            </Typo>
-          </Button>
-        </View>
-        {/* footer */}
-        <View style={styles.footer}>
-          <Typo size={15}>Don't have an account?</Typo>
-          <Pressable onPress={() => router.push("/register")}>
-            <Typo size={15} fontWeight={"700"} color={colors.primary}>
-              Sign Up
-            </Typo>
-          </Pressable>
+            <Pressable
+              onPress={() => handleGoogleSignIn({ onSuccess: oauthGoogle })}
+              disabled={isLoading}
+              className="h-12 items-center justify-center rounded-xl border border-neutral-200 bg-white"
+            >
+              <Text className="text-base font-semibold text-neutral-900">
+                Sign In with Google
+              </Text>
+            </Pressable>
+          </View>
+
+          {/* footer */}
+          <View className="mt-6 flex-row items-center justify-center gap-1">
+            <Text className="text-xs text-neutral-700">
+              Don't have an account?
+            </Text>
+            <Pressable onPress={() => router.push("/register")}>
+              <Text className="text-xs font-semibold text-neutral-900">
+                Sign Up
+              </Text>
+            </Pressable>
+          </View>
         </View>
       </View>
     </ScreenWrapper>
@@ -110,35 +100,3 @@ const login = () => {
 };
 
 export default login;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    gap: spacingY._30,
-    paddingHorizontal: spacingX._20,
-  },
-  welcomeText: {
-    fontSize: verticalScale(20),
-    fontWeight: "bold",
-    color: colors.text,
-  },
-  form: {
-    gap: spacingY._20,
-  },
-  forgotPassword: {
-    textAlign: "right",
-    fontWeight: "500",
-    color: colors.text,
-  },
-  footer: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    gap: 5,
-  },
-  footerText: {
-    textAlign: "center",
-    color: colors.text,
-    fontSize: verticalScale(15),
-  },
-});

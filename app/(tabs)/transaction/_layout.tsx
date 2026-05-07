@@ -41,15 +41,7 @@ export default function TransactionsLayout() {
 
   return (
     <>
-      <View
-        style={{
-          backgroundColor: colors.white,
-          justifyContent: "space-between",
-          flexDirection: "row",
-          alignItems: "center",
-          padding: 10,
-        }}
-      >
+      <View className="flex-row items-center justify-between bg-white px-3 py-2">
         {activeTab === "daily" && (
           <MonthPicker value={trxDate} onChange={setTransactionDate} />
         )}
@@ -60,19 +52,10 @@ export default function TransactionsLayout() {
           <>
             <MonthPicker value={bdtDate} onChange={setBudgetingDate} />
             <TouchableOpacity
-              style={{
-                paddingVertical: 5,
-                paddingHorizontal: 10,
-                backgroundColor: "transparent",
-                borderWidth: 2,
-                borderColor: colors.primary,
-                borderRadius: 100,
-              }}
+              className="rounded-full border-2 border-neutral-900 px-2 py-1"
               onPress={() => router.push("/(modals)/budgetModal")}
             >
-              <Typo size={16} fontWeight={"600"}>
-                Budget Setting
-              </Typo>
+              <Typo fontWeight={"600"}>Budget Setting</Typo>
             </TouchableOpacity>
           </>
         )}

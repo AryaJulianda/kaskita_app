@@ -1,7 +1,8 @@
 import { VoiceRecorderProvider } from "@/hooks/voiceRecorderProvider";
 import { Stack } from "expo-router";
 import React from "react";
-import { StyleSheet } from "react-native";
+import { Platform, StyleSheet, View } from "react-native";
+import "../app.css";
 
 import { colors } from "@/constants/theme";
 import {
@@ -34,9 +35,17 @@ export default function RootLayout() {
   return (
     <VoiceRecorderProvider>
       <SafeAreaProvider style={{ backgroundColor: colors.primary }}>
-        <SafeAreaView style={styles.safeArea}>
-          <Stack screenOptions={{ headerShown: false }} />
-        </SafeAreaView>
+        {Platform.OS === "web" ? (
+          <View style={styles.webContainer}>
+            <SafeAreaView style={[styles.safeArea, styles.webMobileFrame]}>
+              <Stack screenOptions={{ headerShown: false }} />
+            </SafeAreaView>
+          </View>
+        ) : (
+          <SafeAreaView style={styles.safeArea}>
+            <Stack screenOptions={{ headerShown: false }} />
+          </SafeAreaView>
+        )}
       </SafeAreaProvider>
     </VoiceRecorderProvider>
   );

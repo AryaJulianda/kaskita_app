@@ -5,16 +5,15 @@ import { colors } from "@/constants/theme";
 import { useVoiceRecorder } from "@/hooks/voiceRecorderProvider";
 import { useTransactionStore } from "@/stores/transactionStore";
 import { useVoiceTransactionStore } from "@/stores/voiceTransactionStore";
-import { verticalScale } from "@/utils/styling";
 import { router, useFocusEffect } from "expo-router";
 import { PlusIcon } from "phosphor-react-native";
 import React, { useCallback, useMemo, useState } from "react";
 import {
   FlatList,
   RefreshControl,
-  StyleSheet,
   TouchableOpacity,
   View,
+  useWindowDimensions,
 } from "react-native";
 
 // Group transactions by date
@@ -37,11 +36,17 @@ const groupTransactionsByDate = (transactions: any[]) => {
 };
 
 const Daily = () => {
-  const { transactions, getTransactions, isLoading, setDetailTransaction, transactionSummary } =
-    useTransactionStore();
+  const {
+    transactions,
+    getTransactions,
+    isLoading,
+    setDetailTransaction,
+    transactionSummary,
+  } = useTransactionStore();
   const { isRecording, start, stop } = useVoiceRecorder();
   const { uploadVoice, isLoading: isLoadingVoice } = useVoiceTransactionStore();
   const [refreshing, setRefreshing] = useState(false);
+  const { width } = useWindowDimensions();
 
   useFocusEffect(
     useCallback(() => {
@@ -73,18 +78,29 @@ const Daily = () => {
     [transactions],
   );
 
+  const layout = useMemo(() => {
+    if (width >= 1200) {
+      return { maxWidth: 420, paddingX: 18, cardHeight: 92 };
+    }
+    if (width >= 768) {
+      return { maxWidth: 420, paddingX: 16, cardHeight: 92 };
+    }
+    return { maxWidth: 480, paddingX: 14, cardHeight: 92 };
+  }, [width]);
+
   // Render single transaction item
   const renderItem = ({ item }: any) => (
     <TouchableOpacity
-      style={styles.card}
+      className="mb-3 flex-row items-center justify-between rounded-lg bg-white px-3 py-3 shadow"
+      style={{ height: layout.cardHeight }}
       onPress={() => {
         router.push(`/transactionModal/edit`);
         setDetailTransaction(item);
       }}
     >
       {/* Left */}
-      <View style={{ height: "100%" }}>
-        <Typo size={14} fontWeight={600}>
+      <View className="h-full flex-1 pr-3">
+        <Typo fontWeight={600}>
           {item.category?.name ||
             (item.type == "TRANSFER" && "Transfer") ||
             (item.type == "SAVING" &&
@@ -94,17 +110,12 @@ const Daily = () => {
             (item.type == "LOAN" && `Cicilan - ${item.ref_loan?.name}`) ||
             "-"}
         </Typo>
-        {item.note && <Typo size={13}>{item.note}</Typo>}
-        {item.description && (
-          <Typo size={13} color="gray">
-            {item.description}
-          </Typo>
-        )}
+        {item.note && <Typo>{item.note}</Typo>}
+        {item.description && <Typo color="gray">{item.description}</Typo>}
       </View>
       {/* Right */}
-      <View style={styles.cardRight}>
+      <View className="h-full flex-col items-end justify-between">
         <Typo
-          size={14}
           fontWeight={600}
           color={
             item.type === "INCOME"
@@ -132,11 +143,11 @@ const Daily = () => {
           )}
         </Typo>
         {item.asset && (
-          <Typo size={13} color="black" fontWeight={"medium"}>
+          <Typo color="black" fontWeight={"medium"}>
             {item.asset.name}
           </Typo>
         )}
-        <Typo size={13} color="gray">
+        <Typo color="gray">
           {new Date(item.date).toLocaleString(undefined, {
             day: "2-digit",
             month: "short",
@@ -153,13 +164,16 @@ const Daily = () => {
   // Render section (date separator + transactions)
   const renderSection = ({ item }: any) => (
     <View>
-      <View style={styles.sectionLineContainer}>
-        <View style={styles.sectionLine} />
-        <Typo style={styles.sectionLabel} color="gray">
+      {/* Date separator */}
+      <View className="my-3 flex-row items-center">
+        <View className="h-px flex-1 bg-neutral-200" />
+        <Typo className="mx-3 bg-white px-2 font-bold text-[6px]" color="gray">
           {item.date}
         </Typo>
-        <View style={styles.sectionLine} />
+        <View className="h-px flex-1 bg-neutral-200" />
       </View>
+
+      {/* Transactions for this date */}
       {item.items.map((tx: any) => (
         <React.Fragment key={tx.id}>{renderItem({ item: tx })}</React.Fragment>
       ))}
@@ -171,36 +185,55 @@ const Daily = () => {
       {isLoading ? (
         <Loading />
       ) : (
-        <>
-          {/* Summary Row */}
-          <View style={styles.summaryRow}>
-            <SummaryItem label="Income" value={transactionSummary.income} color={colors.green} />
-            <SummaryItem label="Expenses" value={transactionSummary.expense} color={colors.rose} />
-            <SummaryItem label="Total" value={transactionSummary.balance} color={colors.blue} />
+        <View className="flex-1 items-center">
+          <View className="mb-2 mt-2 flex-row items-center justify-between w-full">
+            <SummaryItem
+              label="Income"
+              value={transactionSummary.income}
+              color={colors.green}
+            />
+            <SummaryItem
+              label="Expenses"
+              value={transactionSummary.expense}
+              color={colors.rose}
+            />
+            <SummaryItem
+              label="Total"
+              value={transactionSummary.balance}
+              color={colors.blue}
+            />
           </View>
-          {/* Transaction List */}
-          <FlatList
-            data={groupedData}
-            keyExtractor={(item) => item.date}
-            renderItem={renderSection}
-            refreshControl={
-              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-            }
-            contentContainerStyle={styles.list}
-            ListEmptyComponent={
-              <Typo color="gray" style={{ textAlign: "center", marginTop: 20 }}>
-                Belum ada transaksi
-              </Typo>
-            }
-          />
-        </>
+          <View
+            className="w-full flex-1"
+            style={{
+              maxWidth: layout.maxWidth,
+              // paddingHorizontal: layout.paddingX,
+            }}
+          >
+            <FlatList
+              data={groupedData}
+              keyExtractor={(item) => item.date}
+              renderItem={renderSection}
+              refreshControl={
+                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+              }
+              contentContainerClassName="pb-24 pt-1"
+              style={{ flex: 1 }}
+              ListEmptyComponent={
+                <Typo className="mt-5 text-center text-xs text-neutral-500">
+                  Belum ada transaksi
+                </Typo>
+              }
+            />
+          </View>
+        </View>
       )}
       {/* Floating Action Button */}
       {isLoadingVoice ? (
         <Loading />
       ) : (
         <TouchableOpacity
-          style={styles.fab}
+          className="absolute bottom-6 right-6 h-14 w-14 items-center justify-center rounded-full bg-neutral-900 shadow"
           onPress={() => router.push("/transactionModal")}
         >
           <PlusIcon
@@ -224,11 +257,9 @@ const SummaryItem = ({
   value: number;
   color: string;
 }) => (
-  <View style={styles.summaryItem}>
-    <Typo fontWeight={"medium"} size={13}>
-      {label}
-    </Typo>
-    <Typo fontWeight={"semibold"} color={color} size={13}>
+  <View className="flex-1 items-center justify-center">
+    <Typo fontWeight={"medium"}>{label}</Typo>
+    <Typo fontWeight={"semibold"} color={color} size={6}>
       {new Intl.NumberFormat("id-ID", {
         style: "currency",
         currency: "IDR",
@@ -239,84 +270,3 @@ const SummaryItem = ({
 );
 
 export default Daily;
-
-const styles = StyleSheet.create({
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 16,
-  },
-  list: {
-    paddingBottom: 100,
-    paddingTop: 5,
-  },
-  card: {
-    padding: 12,
-    height: verticalScale(95),
-    borderRadius: 8,
-    backgroundColor: colors.white,
-    marginBottom: 10,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  cardRight: {
-    alignItems: "flex-end",
-    flexDirection: "column",
-    justifyContent: "space-between",
-    height: "100%",
-  },
-  fab: {
-    position: "absolute",
-    bottom: 24,
-    right: 24,
-    backgroundColor: colors.primary,
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    justifyContent: "center",
-    alignItems: "center",
-    elevation: 5,
-  },
-  sectionLineContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginVertical: 12,
-  },
-  sectionLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: colors.neutral200,
-  },
-  sectionLabel: {
-    marginHorizontal: 12,
-    backgroundColor: colors.white,
-    paddingHorizontal: 8,
-    fontWeight: "bold",
-    fontSize: 13,
-  },
-  summaryRow: {
-    flexDirection: "row",
-    backgroundColor: "transparent",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingVertical: 3,
-    marginTop: 6,
-    marginBottom: 8,
-    borderRadius: 8,
-    // shadowColor: "#000",
-    // shadowOpacity: 0.06,
-    // shadowRadius: 2,
-    // elevation: 1,
-  },
-  summaryItem: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});
