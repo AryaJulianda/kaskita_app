@@ -1,6 +1,6 @@
-import { colors, fontFamily, spacingX, spacingY } from "@/constants/theme";
+import { colors, fontFamily } from "@/constants/theme";
 import { verticalScale } from "@/utils/styling";
-import { StyleSheet, TextInput, View } from "react-native";
+import { TextInput, View } from "react-native";
 import Typo from "./Typo";
 
 export const InputField = ({
@@ -24,21 +24,23 @@ export const InputField = ({
   disabled?: boolean;
   editable?: boolean;
 }) => (
-  <View style={styles.inputContainer}>
+  <View className="gap-2.5">
     {label && (
       <Typo color={colors.neutral500} fontWeight={"medium"}>
         {label}
       </Typo>
     )}
     <View
-      style={[
-        styles.inputBox,
-        disabled && { backgroundColor: colors.neutral100 },
-      ]}
+      className={`rounded-lg border border-neutral-200 ${disabled ? "bg-neutral-100" : ""}`}
     >
       {type == "number" ? (
         <TextInput
-          style={[styles.input]}
+          className="px-4 py-2"
+          style={{
+            fontSize: verticalScale(7),
+            fontFamily: fontFamily("normal"),
+            color: colors.textLight,
+          }}
           keyboardType="decimal-pad"
           value={value}
           onChangeText={onChangeText}
@@ -47,11 +49,14 @@ export const InputField = ({
         />
       ) : (
         <TextInput
-          style={[
-            styles.input,
-            multiline && { height: 100, textAlignVertical: "top" },
-            // disabled && { backgroundColor: colors.neutral200 },
-          ]}
+          className="px-4 py-2"
+          style={{
+            fontSize: verticalScale(7),
+            fontFamily: fontFamily("normal"),
+            color: colors.textLight,
+            height: multiline ? 100 : undefined,
+            textAlignVertical: multiline ? "top" : "auto",
+          }}
           placeholder={placeholder}
           value={value}
           onChangeText={onChangeText}
@@ -64,45 +69,3 @@ export const InputField = ({
     </View>
   </View>
 );
-
-const styles = StyleSheet.create({
-  inputContainer: {
-    gap: spacingY._10,
-  },
-  inputBox: {
-    borderWidth: 1,
-    borderColor: colors.neutral200,
-    borderRadius: 8,
-  },
-  input: {
-    fontSize: verticalScale(18),
-    fontFamily: fontFamily("normal"),
-    color: colors.textLight,
-    paddingHorizontal: spacingX._15,
-  },
-  dateBox: {
-    backgroundColor: "transparent",
-    borderWidth: 1,
-    borderColor: colors.neutral200,
-    padding: 8,
-    borderRadius: 8,
-    marginTop: 4,
-  },
-  typeContainer: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    borderWidth: 1,
-    borderColor: colors.neutral200,
-    borderRadius: 100,
-    padding: 5,
-  },
-  typeButton: {
-    flex: 1,
-    borderRadius: 100,
-    paddingVertical: 10,
-  },
-  rowBetween: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-});

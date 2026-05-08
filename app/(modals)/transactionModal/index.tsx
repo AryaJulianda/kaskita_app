@@ -50,7 +50,7 @@ const CreateTransaction = () => {
     <ModalWrapper>
       <Header
         title="Buat Transaksi"
-        leftIcon={<BackButton path="/transaction/daily" />}
+        leftIcon={<BackButton path="/transaction/daily" iconSize={14} />}
         style={{ marginBottom: spacingY._10 }}
       />
       <TransactionForm

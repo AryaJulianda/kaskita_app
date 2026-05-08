@@ -1,17 +1,10 @@
 import Button from "@/components/Button";
 import { InputField } from "@/components/InputField";
 import Typo from "@/components/Typo";
-import { colors, spacingY } from "@/constants/theme";
-import { TransactionCategoryFormData } from "@/stores/transactionStore";
-import { scale } from "@/utils/styling";
+import { colors } from "@/constants/theme";
+import { TransactionCategoryFormData } from "@/stores/transactionCategoryStore";
 import React, { useState } from "react";
-import {
-  Alert,
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Alert, ScrollView, TouchableOpacity, View } from "react-native";
 
 type TransactionCategoryProps = {
   initialData?: Partial<TransactionCategoryFormData>;
@@ -53,7 +46,7 @@ const TransactionCategoryForm: React.FC<TransactionCategoryProps> = ({
 
     if (form.base_budget) {
       cleanForm.base_budget = String(
-        parseInt((form.base_budget as string).replace(/\./g, ""), 10)
+        parseInt((form.base_budget as string).replace(/\./g, ""), 10),
       );
     }
 
@@ -64,59 +57,61 @@ const TransactionCategoryForm: React.FC<TransactionCategoryProps> = ({
   return (
     <View style={{ flex: 1 }}>
       <ScrollView
-        contentContainerStyle={styles.form}
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
+        contentContainerClassName="px-5 pt-4 pb-12"
       >
-        {/* Type Selector */}
-        <View style={styles.inputContainer}>
-          <Typo color={colors.neutral500} fontWeight={"medium"}>
-            Type
-          </Typo>
-          <View style={styles.typeContainer}>
-            {["INCOME", "EXPENSES"].map((t) => (
-              <TouchableOpacity
-                disabled={form.id != ""}
-                key={t}
-                onPress={() => setForm({ ...form, type: t })}
-                style={[
-                  styles.typeButton,
-                  form.type === t && { borderColor: getTypeColor(t) },
-                ]}
-              >
-                <Typo
-                  size={15}
-                  style={{ textAlign: "center" }}
-                  fontWeight={"semibold"}
+        <View className="flex-column gap-4">
+          {/* Type Selector */}
+          <View className="gap-2.5">
+            <Typo color={colors.neutral500} fontWeight={"medium"}>
+              Type
+            </Typo>
+            <View className="flex-row justify-around rounded-full border border-neutral-200 p-1.5">
+              {["INCOME", "EXPENSES"].map((t) => (
+                <TouchableOpacity
+                  disabled={form.id != ""}
+                  key={t}
+                  onPress={() => setForm({ ...form, type: t })}
+                  className="flex-1 rounded-full border border-transparent py-1.5"
+                  style={
+                    form.type === t ? { borderColor: getTypeColor(t) } : null
+                  }
                 >
-                  {t}
-                </Typo>
-              </TouchableOpacity>
-            ))}
+                  <Typo className="text-center" fontWeight={"semibold"}>
+                    {t}
+                  </Typo>
+                </TouchableOpacity>
+              ))}
+            </View>
           </View>
+
+          {/* Name */}
+          <View>
+            <InputField
+              label="Name"
+              value={form.name}
+              onChangeText={(val) => setForm({ ...form, name: val })}
+            />
+          </View>
+
+          {/* Base Budget */}
+          {form.type == "EXPENSES" && (
+            <View>
+              <InputField
+                label="Base Budget"
+                type="number"
+                value={form.base_budget as string}
+                onChangeText={handleBudgetChange}
+              />
+            </View>
+          )}
         </View>
-
-        {/* Name */}
-        <InputField
-          label="Name"
-          value={form.name}
-          onChangeText={(val) => setForm({ ...form, name: val })}
-        />
-
-        {/* Base Budget */}
-        {form.type == "EXPENSES" && (
-          <InputField
-            label="Base Budget"
-            type="number"
-            value={form.base_budget as string}
-            onChangeText={handleBudgetChange}
-          />
-        )}
       </ScrollView>
 
-      <View style={styles.footer}>
+      <View className="flex-row items-center justify-center gap-3 border-t border-primary px-5 pt-4">
         <Button onPress={handleSubmit} loading={loading} style={{ flex: 1 }}>
-          <Typo color={colors.black} fontWeight={"700"}>
+          <Typo color={colors.text} fontWeight={"700"}>
             {submitLabel}
           </Typo>
         </Button>
@@ -137,38 +132,3 @@ const getTypeColor = (type: string) => {
       return "transparent";
   }
 };
-
-const styles = StyleSheet.create({
-  form: {
-    gap: spacingY._20,
-    marginTop: spacingY._15,
-    paddingBottom: spacingY._50,
-    paddingHorizontal: spacingY._20,
-  },
-  inputContainer: { gap: spacingY._10 },
-  typeContainer: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    borderWidth: 1,
-    borderColor: colors.neutral200,
-    borderRadius: 100,
-    padding: 5,
-  },
-  typeButton: {
-    flex: 1,
-    borderRadius: 100,
-    paddingVertical: 5,
-    borderWidth: 1,
-    borderColor: "transparent",
-  },
-  footer: {
-    alignItems: "center",
-    flexDirection: "row",
-    justifyContent: "center",
-    gap: scale(12),
-    paddingTop: spacingY._15,
-    borderTopColor: colors.primary,
-    borderTopWidth: 1,
-    paddingHorizontal: spacingY._20,
-  },
-});

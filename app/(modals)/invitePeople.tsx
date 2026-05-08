@@ -4,7 +4,7 @@ import Header from "@/components/Header";
 import { InputField } from "@/components/InputField";
 import ModalWrapper from "@/components/ModalWrapper";
 import Typo from "@/components/Typo";
-import { colors, spacingX, spacingY } from "@/constants/theme";
+import { colors, spacingY } from "@/constants/theme";
 import { useAuthStore } from "@/stores/authStore";
 import { getProfileImage } from "@/utils/getProfileImage";
 import * as Clipboard from "expo-clipboard";
@@ -17,7 +17,6 @@ import {
   Modal,
   Platform,
   Pressable,
-  StyleSheet,
   TouchableWithoutFeedback,
   View,
 } from "react-native";
@@ -67,19 +66,13 @@ const InvitePeople = () => {
 
   return (
     <ModalWrapper>
-      <View style={styles.container}>
+      <View className="flex-1 px-5">
         <Header
           title="Mencatat Bersama"
           leftIcon={<BackButton />}
           style={{ marginBottom: spacingY._10 }}
         />
-        <View
-          style={{
-            flexDirection: "column",
-            justifyContent: "space-between",
-            flex: 1,
-          }}
-        >
+        <View className="flex-1 justify-between">
           <View>
             <Typo
               size={16}
@@ -90,13 +83,16 @@ const InvitePeople = () => {
             </Typo>
 
             {groupDetail?.users && groupDetail.users.length > 0 ? (
-              <View style={{ gap: 12 }}>
+              <View className="gap-3">
                 {groupDetail.users.map((member: any) => (
-                  <View key={member.id} style={styles.memberItem}>
-                    <View style={styles.memberImageWrapper}>
+                  <View
+                    key={member.id}
+                    className="flex-row items-center gap-2.5 rounded-xl bg-neutral-100 px-2.5 py-2"
+                  >
+                    <View className="h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-neutral-200">
                       <Image
                         source={getProfileImage(member.image)}
-                        style={styles.memberImage}
+                        className="h-full w-full rounded-full"
                       />
                     </View>
                     <Typo size={15} fontWeight="500">
@@ -113,25 +109,29 @@ const InvitePeople = () => {
             )}
           </View>
 
-          <View style={{ flexDirection: "column", gap: 15 }}>
+          <View className="gap-4">
             {/* <Typo>
             Ajak Partnermu untuk mencatat keuangan bersama dengan membagikan
             kode undangan ini
           </Typo> */}
 
             {/* Kode & Passcode */}
-            <View
-              style={{ flexDirection: "row", justifyContent: "space-between" }}
-            >
+            <View className="flex-row justify-between">
               <View>
                 <Typo>Kode Undangan</Typo>
-                <Typo size={14} style={styles.codeBox}>
+                <Typo
+                  size={14}
+                  className="rounded-lg bg-neutral-200 px-2.5 py-1.5"
+                >
                   {invitationCode}
                 </Typo>
               </View>
               <View>
                 <Typo>Passcode</Typo>
-                <Typo size={14} style={styles.codeBox}>
+                <Typo
+                  size={14}
+                  className="rounded-lg bg-neutral-200 px-2.5 py-1.5"
+                >
                   {invitationPasscode}
                 </Typo>
               </View>
@@ -183,39 +183,43 @@ ${invitationPasscode}`;
           onRequestClose={() => setIsJoinModalVisible(false)}
         >
           <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-            <View style={styles.modalOverlay}>
+            <View className="flex-1 justify-end bg-black/50">
               <Pressable
-                style={styles.modalBackdrop}
+                className="flex-1"
                 onPress={() => setIsJoinModalVisible(false)}
               />
 
               <KeyboardAvoidingView
                 behavior={Platform.OS === "ios" ? "padding" : "height"}
                 keyboardVerticalOffset={Platform.OS === "ios" ? 20 : 0}
-                style={{ width: "100%" }}
+                className="w-full"
               >
                 <KeyboardAwareScrollView
                   enableOnAndroid
                   keyboardShouldPersistTaps="handled"
-                  contentContainerStyle={{
-                    flexGrow: 1,
-                    justifyContent: "flex-end",
-                  }}
+                  contentContainerClassName="flex-grow justify-end"
                   extraScrollHeight={Platform.OS === "ios" ? 20 : 270}
                 >
-                  <View style={styles.modalContent}>
+                  <View
+                    className="rounded-2xl bg-white p-5 pb-8"
+                    style={{
+                      elevation: 10,
+                      shadowColor: "#000",
+                      shadowOpacity: 0.25,
+                      shadowRadius: 6,
+                      shadowOffset: { width: 0, height: -2 },
+                    }}
+                  >
                     <Typo
                       size={18}
                       fontWeight="700"
-                      style={{
-                        textAlign: "center",
-                        marginBottom: spacingY._15,
-                      }}
+                      className="text-center"
+                      style={{ marginBottom: spacingY._15 }}
                     >
                       Masukan Kode Undangan
                     </Typo>
 
-                    <View style={{ flexDirection: "row", gap: 10 }}>
+                    <View className="flex-row gap-2.5">
                       <InputField
                         label="Kode Undangan"
                         type="number"
@@ -255,66 +259,3 @@ ${invitationPasscode}`;
 };
 
 export default InvitePeople;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingHorizontal: spacingY._20,
-  },
-  codeBox: {
-    backgroundColor: colors.neutral200,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 10,
-  },
-  keyboardAvoiding: {
-    flex: 1,
-    justifyContent: "flex-end",
-  },
-  modalBackdrop: {
-    flex: 1,
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.5)",
-    justifyContent: "flex-end",
-  },
-  modalContent: {
-    backgroundColor: colors.white,
-    borderRadius: 20,
-    padding: spacingX._20,
-    paddingBottom: spacingY._30,
-    elevation: 10,
-    shadowColor: "#000",
-    shadowOpacity: 0.25,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: -2 },
-  },
-
-  memberItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: colors.neutral100,
-    borderRadius: 12,
-    paddingVertical: 8,
-    paddingHorizontal: 10,
-    gap: 10,
-  },
-
-  memberImageWrapper: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    overflow: "hidden",
-    backgroundColor: colors.neutral200,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-
-  memberImage: {
-    width: "100%",
-    height: "100%",
-    borderRadius: 20,
-    resizeMode: "cover",
-  },
-});

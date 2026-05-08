@@ -1,6 +1,6 @@
-import { colors, spacingY } from "@/constants/theme";
+import { colors } from "@/constants/theme";
 import { useState } from "react";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { TouchableOpacity, View } from "react-native";
 import { SelectModal } from "./SelectModal";
 import Typo from "./Typo";
 
@@ -29,7 +29,7 @@ export const SelectInput = ({
   };
 
   return (
-    <View style={styles.inputContainer}>
+    <View className="gap-2.5">
       {label && (
         <Typo color={colors.neutral500} fontWeight={"medium"}>
           {label}
@@ -37,7 +37,7 @@ export const SelectInput = ({
       )}
 
       <TouchableOpacity
-        style={styles.inputBox}
+        className="rounded-lg border border-neutral-200 px-3.5 py-3"
         onPress={() => setVisible(true)}
       >
         <Typo>{value || placeholder}</Typo>
@@ -54,16 +54,3 @@ export const SelectInput = ({
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  inputContainer: {
-    gap: spacingY._10,
-  },
-  inputBox: {
-    borderWidth: 1,
-    borderColor: colors.neutral200,
-    borderRadius: 8,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-  },
-});

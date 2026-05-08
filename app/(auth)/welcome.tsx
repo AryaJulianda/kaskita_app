@@ -5,36 +5,57 @@ import { colors, spacingX, spacingY } from "@/constants/theme";
 import { verticalScale } from "@/utils/styling";
 import { useRouter } from "expo-router";
 import React from "react";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { TouchableOpacity, View } from "react-native";
 import Animated, { FadeIn, FadeInDown } from "react-native-reanimated";
 
 const welcome = () => {
   const router = useRouter();
   return (
     <ScreenWrapper>
-      <View style={styles.container}>
+      <View
+        className="flex-1 justify-between"
+        style={{ paddingTop: spacingY._7 }}
+      >
         {/* login button & image */}
         <View>
           <TouchableOpacity
             onPress={() => router.push("/login")}
-            style={styles.loginButton}
+            className="self-end"
+            style={{ marginRight: spacingX._20 }}
           >
             <Typo fontWeight={"500"}>Sing in</Typo>
           </TouchableOpacity>
 
           <Animated.Image
             entering={FadeIn.duration(1000)}
-            style={styles.welcomeImage}
+            style={{
+              width: "100%",
+              height: verticalScale(300),
+              alignSelf: "center",
+              marginTop: verticalScale(100),
+            }}
             source={require("@/assets/images/welcome.png")}
             resizeMode="contain"
           />
         </View>
 
         {/* footer */}
-        <View style={styles.footer}>
+        <View
+          className="items-center bg-neutral-900"
+          style={{
+            paddingTop: verticalScale(30),
+            paddingBottom: verticalScale(45),
+            gap: spacingY._20,
+            shadowColor: "white",
+            shadowOffset: { width: 0, height: -10 },
+            elevation: 10,
+            shadowRadius: 25,
+            shadowOpacity: 0.15,
+          }}
+        >
           <Animated.View
             entering={FadeInDown.duration(1000).springify().damping(10)}
-            style={{ alignItems: "center" }}
+            className="items-center"
           >
             <Typo size={30} fontWeight={"800"}>
               Always take control
@@ -49,7 +70,8 @@ const welcome = () => {
               .delay(100)
               .springify()
               .damping(10)}
-            style={{ alignItems: "center", gap: 2 }}
+            className="items-center"
+            style={{ gap: 2 }}
           >
             <Typo size={17} color={colors.textLight}>
               Finance must be arranged to set a better
@@ -64,7 +86,8 @@ const welcome = () => {
               .delay(200)
               .springify()
               .damping(10)}
-            style={styles.buttonContainer}
+            className="w-full"
+            style={{ paddingHorizontal: spacingX._25 }}
           >
             <Button onPress={() => router.push("/register")}>
               <Typo size={22} color={colors.neutral900} fontWeight={"600"}>
@@ -79,37 +102,3 @@ const welcome = () => {
 };
 
 export default welcome;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "space-between",
-    paddingTop: spacingY._7,
-  },
-  welcomeImage: {
-    width: "100%",
-    height: verticalScale(300),
-    alignSelf: "center",
-    marginTop: verticalScale(100),
-  },
-  loginButton: {
-    alignSelf: "flex-end",
-    marginRight: spacingX._20,
-  },
-  footer: {
-    backgroundColor: colors.neutral900,
-    alignItems: "center",
-    paddingTop: verticalScale(30),
-    paddingBottom: verticalScale(45),
-    gap: spacingY._20,
-    shadowColor: "white",
-    shadowOffset: { width: 0, height: -10 },
-    elevation: 10,
-    shadowRadius: 25,
-    shadowOpacity: 0.15,
-  },
-  buttonContainer: {
-    width: "100%",
-    paddingHorizontal: spacingX._25,
-  },
-});

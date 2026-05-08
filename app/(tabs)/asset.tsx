@@ -1,7 +1,7 @@
 import Loading from "@/components/Loading";
 import ScreenWrapper from "@/components/ScreenWrapper";
 import Typo from "@/components/Typo";
-import { colors, radius, spacingX, spacingY } from "@/constants/theme";
+import { colors } from "@/constants/theme";
 import { Asset as AssetType, useAssetStore } from "@/stores/assetStrore";
 import { Loan, useLoanStore } from "@/stores/loanStore";
 import { Saving, useSavingStore } from "@/stores/savingStore";
@@ -9,13 +9,7 @@ import { verticalScale } from "@/utils/styling";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { PlusIcon } from "phosphor-react-native";
 import React, { useCallback, useState } from "react";
-import {
-  FlatList,
-  RefreshControl,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { FlatList, RefreshControl, TouchableOpacity, View } from "react-native";
 
 type ListItem = AssetType | Saving | Loan;
 
@@ -85,17 +79,17 @@ const Asset = () => {
 
   const RenderAssetItem = ({ item }: { item: AssetType }) => (
     <TouchableOpacity
-      style={styles.card}
+      className="mb-2.5 rounded-lg border border-neutral-200 bg-white p-3"
       onPress={() => {
         router.push(`/assetModal/edit`);
         setDetailAsset(item);
       }}
     >
-      <Typo size={14}>{item.name}</Typo>
-      <Typo size={14} style={{ color: "gray" }}>
+      <Typo size={7}>{item.name}</Typo>
+      <Typo size={7} color={colors.neutral500}>
         {item.category?.name}
       </Typo>
-      <Typo size={14}>{currencyFormatter.format(item.balance)}</Typo>
+      <Typo size={7}>{currencyFormatter.format(item.balance)}</Typo>
     </TouchableOpacity>
   );
 
@@ -109,52 +103,42 @@ const Asset = () => {
           );
     return (
       <TouchableOpacity
-        style={styles.card}
+        className="mb-2.5 rounded-lg border border-neutral-200 bg-white p-3"
         onPress={() => {
           router.push(`/savingModal/edit`);
           setDetailSaving(item);
         }}
       >
-        <Typo size={14}>{item.name}</Typo>
-        <View style={styles.row}>
-          <View style={styles.progressBarContainer}>
+        <Typo size={7}>{item.name}</Typo>
+        <View className="flex-row items-center justify-between gap-2">
+          <View className="my-1.5 h-2 w-[90%] flex-row overflow-hidden rounded bg-neutral-200">
             <View
               style={[
-                styles.progressBar,
                 { width: `${percent}%`, backgroundColor: colors.primary },
               ]}
             />
             <View
-              style={[
-                styles.progressBar,
-                { flex: 1, backgroundColor: colors.neutral200 },
-              ]}
+              className="flex-1"
+              style={{ backgroundColor: colors.neutral200 }}
             />
           </View>
 
-          <Typo size={12} color={colors.neutral700}>
-            {percent}%
-          </Typo>
+          <Typo color={colors.neutral700}>{percent}%</Typo>
         </View>
-        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-          <View style={{ flex: 1 }}>
-            <Typo size={13} fontWeight={500} color={colors.neutral500}>
+        <View className="flex-row justify-between">
+          <View className="flex-1">
+            <Typo fontWeight={500} color={colors.neutral500}>
               Current Amount
             </Typo>
-            <Typo size={13} fontWeight={600} color={colors.primary}>
+            <Typo fontWeight={600} color={colors.primary}>
               {currencyFormatter.format(item.current_amount)}
             </Typo>
           </View>
-          <View
-            style={{
-              flex: 1,
-              alignItems: "flex-end",
-            }}
-          >
-            <Typo size={13} fontWeight={500} color={colors.neutral500}>
+          <View className="flex-1 items-end">
+            <Typo fontWeight={500} color={colors.neutral500}>
               Target Amount
             </Typo>
-            <Typo size={13} fontWeight={600} color={colors.green}>
+            <Typo fontWeight={600} color={colors.green}>
               {currencyFormatter.format(item.target_amount)}
             </Typo>
           </View>
@@ -172,57 +156,52 @@ const Asset = () => {
         : Math.min(100, Math.round((paidAmount / item.principal) * 100));
     return (
       <TouchableOpacity
-        style={styles.card}
+        className="mb-2.5 rounded-lg border border-neutral-200 bg-white p-3"
         onPress={() => {
           router.push(`/loanModal/edit`);
           setDetailLoan(item);
         }}
       >
-        <Typo size={14}>{item.name}</Typo>
-        <View style={styles.row}>
-          <View style={styles.progressBarContainer}>
+        <Typo size={7}>{item.name}</Typo>
+        <View className="flex-row items-center justify-between gap-2">
+          <View className="my-1.5 h-2 w-[90%] flex-row overflow-hidden rounded bg-neutral-200">
             <View
               style={[
-                styles.progressBar,
                 { width: `${percent}%`, backgroundColor: colors.primary },
               ]}
             />
             <View
-              style={[
-                styles.progressBar,
-                { flex: 1, backgroundColor: colors.neutral200 },
-              ]}
+              className="flex-1"
+              style={{ backgroundColor: colors.neutral200 }}
             />
           </View>
 
-          <Typo size={12} color={colors.neutral700}>
-            {percent}%
-          </Typo>
+          <Typo color={colors.neutral700}>{percent}%</Typo>
         </View>
-        <View style={styles.loanStatsRow}>
-          <View style={styles.loanLeftStats}>
-            <View style={styles.loanStatItem}>
-              <Typo size={12} fontWeight={500} color={colors.neutral500}>
+        <View className="mt-1.5 flex-row items-start justify-between border-t border-neutral-200 pt-2">
+          <View className="flex-1">
+            <View className="gap-0.5">
+              <Typo fontWeight={500} color={colors.neutral500}>
                 Terbayar
               </Typo>
-              <Typo size={11} fontWeight={600} color={colors.primary}>
+              <Typo size={6} fontWeight={600} color={colors.primary}>
                 {currencyFormatter.format(paidAmount)}
               </Typo>
             </View>
-            <View style={styles.loanStatItem}>
-              <Typo size={12} fontWeight={500} color={colors.neutral500}>
+            <View className="gap-0.5 mt-1.5">
+              <Typo fontWeight={500} color={colors.neutral500}>
                 Sisa
               </Typo>
-              <Typo size={11} fontWeight={600} color={colors.rose}>
+              <Typo size={6} fontWeight={600} color={colors.rose}>
                 {currencyFormatter.format(remainingAmount)}
               </Typo>
             </View>
           </View>
-          <View style={styles.loanRightStats}>
-            <Typo size={12} fontWeight={500} color={colors.neutral500}>
+          <View className="ml-4 items-end justify-center">
+            <Typo fontWeight={500} color={colors.neutral500}>
               Total
             </Typo>
-            <Typo size={11} fontWeight={600} color={colors.green}>
+            <Typo size={6} fontWeight={600} color={colors.green}>
               {currencyFormatter.format(item.principal)}
             </Typo>
           </View>
@@ -233,79 +212,73 @@ const Asset = () => {
 
   return (
     <ScreenWrapper>
-      <View style={styles.container}>
+      <View className="flex-1">
         {isLoadingAsset || isloadingSaving || isLoadingLoan ? (
           <Loading size={"large"} />
         ) : (
           <>
             {/* balance view */}
-            <View style={styles.balanceView}>
-              <View style={{ alignItems: "center" }}>
-                <Typo size={26} fontWeight={"bold"}>
+            <View className="h-40 items-center justify-center">
+              <View className="items-center">
+                <Typo size={9} fontWeight={"bold"}>
                   {getTotalBalance()}
                 </Typo>
-                <Typo size={16} color={colors.neutral600}>
+                <Typo size={8} color={colors.neutral600}>
                   Total Balance
                 </Typo>
               </View>
             </View>
 
             {/* lists */}
-            <View style={styles.assets}>
+            <View className="flex-1 rounded-3xl bg-neutral-50 p-5 pt-6 shadow">
               {/* header */}
-              <View style={styles.flexRow}>
+              <View className="mb-2.5 flex-row items-center justify-between">
                 <TouchableOpacity
-                  style={[
-                    styles.type,
-                    {
-                      borderColor:
-                        activeType == "ASSETS"
-                          ? colors.primary
-                          : colors.neutral300,
-                    },
-                  ]}
+                  className="rounded-full border-2 px-4 py-1.5"
+                  style={{
+                    borderColor:
+                      activeType == "ASSETS"
+                        ? colors.primary
+                        : colors.neutral300,
+                  }}
                   onPress={() => setActiveType("ASSETS")}
                 >
-                  <Typo fontWeight={"500"} size={16}>
+                  <Typo fontWeight={"500"} size={8}>
                     Asset
                   </Typo>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  style={[
-                    styles.type,
-                    {
-                      borderColor:
-                        activeType == "SAVINGS"
-                          ? colors.primary
-                          : colors.neutral300,
-                    },
-                  ]}
+                  className="rounded-full border-2 px-4 py-1.5"
+                  style={{
+                    borderColor:
+                      activeType == "SAVINGS"
+                        ? colors.primary
+                        : colors.neutral300,
+                  }}
                   onPress={() => setActiveType("SAVINGS")}
                 >
-                  <Typo fontWeight={"500"} size={16}>
+                  <Typo fontWeight={"500"} size={8}>
                     Tabungan
                   </Typo>
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                  style={[
-                    styles.type,
-                    {
-                      borderColor:
-                        activeType == "LOANS"
-                          ? colors.primary
-                          : colors.neutral300,
-                    },
-                  ]}
+                  className="rounded-full border-2 px-4 py-1.5"
+                  style={{
+                    borderColor:
+                      activeType == "LOANS"
+                        ? colors.primary
+                        : colors.neutral300,
+                  }}
                   onPress={() => setActiveType("LOANS")}
                 >
-                  <Typo fontWeight={"500"} size={16}>
+                  <Typo fontWeight={"500"} size={8}>
                     Pinjaman
                   </Typo>
                 </TouchableOpacity>
               </View>
 
-              <View style={{ paddingBottom: spacingY._40 }}>
+              <View className="flex-1 pb-10">
                 <FlatList<ListItem>
                   data={
                     activeType == "ASSETS"
@@ -325,6 +298,7 @@ const Asset = () => {
 
                     return RenderLoanItem({ item: item as Loan });
                   }}
+                  className="flex-1"
                   refreshControl={
                     <RefreshControl
                       refreshing={refreshing}
@@ -332,10 +306,7 @@ const Asset = () => {
                     />
                   }
                   ListEmptyComponent={
-                    <Typo
-                      color="gray"
-                      style={{ textAlign: "center", marginTop: 20 }}
-                    >
+                    <Typo className="mt-5 text-center text-xs text-neutral-500">
                       {activeType == "ASSETS"
                         ? "Belum ada Asset"
                         : activeType == "SAVINGS"
@@ -363,21 +334,11 @@ const Asset = () => {
                             break;
                         }
                       }}
-                      style={{
-                        flexDirection: "row",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        backgroundColor: colors.primary,
-                        width: 150,
-                        borderRadius: 100,
-                        gap: 10,
-                        marginHorizontal: "auto",
-                        marginTop: 10,
-                        marginBottom: 30,
-                      }}
+                      className="mx-auto mt-2.5 gap-2 py-2 px-3 mb-8 flex-row items-center justify-center rounded-full"
+                      style={{ backgroundColor: colors.primary }}
                     >
                       <Typo color="white">Tambah</Typo>
-                      <PlusIcon color={colors.white} size={verticalScale(25)} />
+                      <PlusIcon color={colors.white} size={verticalScale(8)} />
                     </TouchableOpacity>
                   }
                 />
@@ -391,95 +352,3 @@ const Asset = () => {
 };
 
 export default Asset;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "space-between",
-  },
-  balanceView: {
-    height: verticalScale(160),
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  flexRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: spacingY._10,
-  },
-  assets: {
-    flex: 1,
-    backgroundColor: colors.neutral50,
-    borderTopRightRadius: radius._30,
-    borderTopLeftRadius: radius._30,
-    borderBottomRightRadius: radius._30,
-    borderBottomLeftRadius: radius._30,
-    padding: spacingX._20,
-    paddingTop: spacingX._25,
-
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-    height: "100%",
-    overflow: "hidden",
-  },
-  listStyle: {
-    paddingVertical: spacingY._25,
-    paddingTop: spacingY._15,
-  },
-  card: {
-    padding: 12,
-    backgroundColor: colors.white,
-    marginBottom: 10,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: colors.neutral200,
-  },
-  type: {
-    borderRadius: 100,
-    paddingHorizontal: 15,
-    paddingVertical: 5,
-    borderWidth: 2,
-  },
-  progressBarContainer: {
-    width: "90%",
-    flexDirection: "row",
-    height: 8,
-    borderRadius: 4,
-    overflow: "hidden",
-    marginVertical: 6,
-    backgroundColor: colors.neutral200,
-  },
-  progressBar: {
-    height: 8,
-    borderRadius: 4,
-  },
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  loanStatsRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    marginTop: 6,
-    paddingTop: 8,
-    borderTopWidth: 1,
-    borderTopColor: colors.neutral200,
-  },
-  loanLeftStats: {
-    flex: 1,
-    gap: 6,
-  },
-  loanRightStats: {
-    alignItems: "flex-end",
-    justifyContent: "center",
-    marginLeft: 16,
-  },
-  loanStatItem: {
-    gap: 2,
-  },
-});

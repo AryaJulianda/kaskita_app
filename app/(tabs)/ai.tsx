@@ -8,7 +8,7 @@ import { useVoiceTransactionStore } from "@/stores/voiceTransactionStore";
 import { useRouter } from "expo-router";
 import { MicrophoneIcon, StopIcon } from "phosphor-react-native";
 import React from "react";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { TouchableOpacity, View } from "react-native";
 
 const ai = () => {
   const router = useRouter();
@@ -34,8 +34,8 @@ const ai = () => {
         <Loading size={"large"} />
       ) : (
         <>
-          <View style={styles.note}>
-            <Typo size={14}>
+          <View className="rounded-2xl border border-neutral-400 bg-white p-5">
+            <Typo>
               🤖 Want to add a transaction? Just tell AI the amount, category,
               and which asset you used.{"\n"}
               {"\n"}
@@ -48,12 +48,11 @@ const ai = () => {
 
           {/* Microphone Button */}
           <TouchableOpacity
-            style={[
-              isRecording
-                ? { backgroundColor: colors.rose }
-                : { backgroundColor: colors.primary },
-              styles.fab,
-            ]}
+            className="absolute bottom-6 right-6 p-4 items-center justify-center rounded-full"
+            style={{
+              backgroundColor: isRecording ? colors.rose : colors.primary,
+              elevation: 5,
+            }}
             onPress={handleVoicePress}
           >
             {isRecording ? (
@@ -77,38 +76,3 @@ const ai = () => {
 };
 
 export default ai;
-
-const styles = StyleSheet.create({
-  waveContainer: {
-    position: "absolute",
-    bottom: 24,
-    right: 24,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  wave: {
-    position: "absolute",
-    width: 90,
-    height: 90,
-    borderRadius: 45,
-    backgroundColor: "rgba(0,150,255,0.3)",
-  },
-  note: {
-    backgroundColor: "white",
-    borderRadius: 20,
-    padding: 20,
-    borderWidth: 1,
-    borderColor: colors.neutral400,
-  },
-  fab: {
-    position: "absolute",
-    bottom: 24,
-    right: 24,
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    justifyContent: "center",
-    alignItems: "center",
-    elevation: 5,
-  },
-});

@@ -1,12 +1,12 @@
-import { colors, radius } from "@/constants/theme";
+import { colors } from "@/constants/theme";
 import { verticalScale } from "@/utils/styling";
 import { TrashIcon } from "phosphor-react-native";
 import React from "react";
-import { StyleSheet, TouchableOpacity, ViewStyle } from "react-native";
+import { TouchableOpacity, ViewStyle } from "react-native";
 
 const DeleteIcon = ({
   style,
-  iconSize = 28,
+  iconSize = 14,
   onPress,
 }: {
   style?: ViewStyle;
@@ -14,7 +14,11 @@ const DeleteIcon = ({
   onPress: () => void;
 }) => {
   return (
-    <TouchableOpacity onPress={onPress} style={[styles.button, style]}>
+    <TouchableOpacity
+      onPress={onPress}
+      className="self-end rounded-xl bg-neutral-300 p-1.5"
+      style={style}
+    >
       <TrashIcon
         size={verticalScale(iconSize)}
         color={colors.rose}
@@ -25,13 +29,3 @@ const DeleteIcon = ({
 };
 
 export default DeleteIcon;
-
-const styles = StyleSheet.create({
-  button: {
-    backgroundColor: colors.neutral300,
-    alignSelf: "flex-end",
-    borderRadius: radius._12,
-    borderCurve: "continuous",
-    padding: 5,
-  },
-});

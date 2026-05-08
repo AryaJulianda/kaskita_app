@@ -1,7 +1,7 @@
 import { colors, spacingY } from "@/constants/theme";
 import { ModalWrapperProps } from "@/types";
 import React from "react";
-import { Platform, StyleSheet, View } from "react-native";
+import { Platform, View } from "react-native";
 const isIos = Platform.OS == "ios";
 
 const ModalWrapper = ({
@@ -10,18 +10,20 @@ const ModalWrapper = ({
   bg = colors.bgLight,
 }: ModalWrapperProps) => {
   return (
-    <View style={[styles.container, { backgroundColor: bg }, style && style]}>
+    <View
+      className="flex-1"
+      style={[
+        {
+          backgroundColor: bg,
+          paddingTop: isIos ? spacingY._15 : 20,
+          paddingBottom: isIos ? spacingY._20 : spacingY._10,
+        },
+        style && style,
+      ]}
+    >
       {children}
     </View>
   );
 };
 
 export default ModalWrapper;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingTop: isIos ? spacingY._15 : 20,
-    paddingBottom: isIos ? spacingY._20 : spacingY._10,
-  },
-});

@@ -1,10 +1,8 @@
 import Typo from "@/components/Typo";
-import { colors, spacingY } from "@/constants/theme";
+import { colors } from "@/constants/theme";
 import { createSavingForm, editSavingForm } from "@/stores/savingStore";
-import { scale } from "@/utils/styling";
-import { useRouter } from "expo-router";
 import React, { useState } from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
+import { ScrollView, View } from "react-native";
 import Button from "../Button";
 import { InputField } from "../InputField";
 
@@ -21,7 +19,6 @@ const SavingForm = <T extends createSavingForm | editSavingForm>({
   loading,
   type,
 }: SavingProps<T>) => {
-  const router = useRouter();
   const [form, setForm] = useState<T>({
     current_amount: "0",
     target_amount: "0",
@@ -52,10 +49,10 @@ const SavingForm = <T extends createSavingForm | editSavingForm>({
     onSubmit({
       ...form,
       current_amount: String(
-        parseInt(form.current_amount.replace(/\./g, ""), 10)
+        parseInt(form.current_amount.replace(/\./g, ""), 10),
       ),
       target_amount: String(
-        parseInt(form.target_amount.replace(/\./g, ""), 10)
+        parseInt(form.target_amount.replace(/\./g, ""), 10),
       ),
     } as T);
   };
@@ -63,37 +60,39 @@ const SavingForm = <T extends createSavingForm | editSavingForm>({
   return (
     <View style={{ flex: 1 }}>
       <ScrollView
-        contentContainerStyle={styles.form}
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
+        contentContainerClassName="px-5 pt-4 pb-12"
       >
-        {/* Saving Name */}
-        <InputField
-          label="Nama Tabungan"
-          value={form.name}
-          onChangeText={(val) => setForm({ ...form, name: val })}
-        />
+        <View className="flex-col gap-2.5">
+          {/* Saving Name */}
+          <InputField
+            label="Nama Tabungan"
+            value={form.name}
+            onChangeText={(val) => setForm({ ...form, name: val })}
+          />
 
-        {/* Target Amount */}
-        <InputField
-          label="Target Tabungan"
-          type="number"
-          value={form.target_amount}
-          onChangeText={handleTargetAmountChange}
-        />
+          {/* Target Amount */}
+          <InputField
+            label="Target Tabungan"
+            type="number"
+            value={form.target_amount}
+            onChangeText={handleTargetAmountChange}
+          />
 
-        {/* Current Amount */}
-        <InputField
-          label="Tabungan Terkumpul"
-          type="number"
-          value={form.current_amount}
-          onChangeText={handleCurrentAmountChange}
-        />
+          {/* Current Amount */}
+          <InputField
+            label="Tabungan Terkumpul"
+            type="number"
+            value={form.current_amount}
+            onChangeText={handleCurrentAmountChange}
+          />
+        </View>
       </ScrollView>
 
-      <View style={styles.footer}>
+      <View className="flex-row items-center justify-center gap-3 border-t border-primary px-5 pt-4">
         <Button onPress={handleSubmit} loading={loading} style={{ flex: 1 }}>
-          <Typo color={colors.black} fontWeight={"700"}>
+          <Typo color={colors.text} fontWeight={"700"}>
             {type == "Add" ? "Tambah Tabungan" : "Simpan Tabungan"}
           </Typo>
         </Button>
@@ -103,22 +102,3 @@ const SavingForm = <T extends createSavingForm | editSavingForm>({
 };
 
 export default SavingForm;
-
-const styles = StyleSheet.create({
-  form: {
-    gap: spacingY._20,
-    marginTop: spacingY._15,
-    paddingBottom: spacingY._50,
-    paddingHorizontal: spacingY._20,
-  },
-  footer: {
-    alignItems: "center",
-    flexDirection: "row",
-    justifyContent: "center",
-    gap: scale(12),
-    paddingTop: spacingY._15,
-    borderTopColor: colors.primary,
-    borderTopWidth: 1,
-    paddingHorizontal: spacingY._20,
-  },
-});

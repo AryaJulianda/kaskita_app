@@ -1,4 +1,5 @@
 import { Stack } from "expo-router";
+import { Platform } from "react-native";
 
 export const unstable_settings = {
   initialRouteName: "index",
@@ -6,6 +7,11 @@ export const unstable_settings = {
 
 export default function TransactionCategoryLayout() {
   return (
-    <Stack screenOptions={{ presentation: "modal", headerShown: false }} />
+    <Stack
+      screenOptions={{
+        presentation: Platform.OS === "web" ? "card" : "modal",
+        headerShown: false,
+      }}
+    />
   );
 }

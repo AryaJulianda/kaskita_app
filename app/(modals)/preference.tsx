@@ -4,7 +4,7 @@ import Header from "@/components/Header";
 import { InputField } from "@/components/InputField";
 import ModalWrapper from "@/components/ModalWrapper";
 import Typo from "@/components/Typo";
-import { colors, radius, spacingX, spacingY } from "@/constants/theme";
+import { colors, spacingY } from "@/constants/theme";
 import { useUserSettingStore } from "@/stores/userSettingStore";
 import { accountOptionType } from "@/types";
 import { verticalScale } from "@/utils/styling";
@@ -18,7 +18,6 @@ import React, { useCallback, useState } from "react";
 import {
   Alert,
   Modal,
-  StyleSheet,
   TouchableOpacity,
   TouchableWithoutFeedback,
   View,
@@ -75,7 +74,7 @@ const preference = () => {
   useFocusEffect(
     useCallback(() => {
       getUserSettings();
-    }, [getUserSettings])
+    }, [getUserSettings]),
   );
 
   return (
@@ -85,57 +84,51 @@ const preference = () => {
         leftIcon={<BackButton path="/profile" />}
         style={{ marginBottom: spacingY._10 }}
       />
-      <View style={styles.container}>
-        <View style={styles.accountOption}>
+      <View className="flex-1 px-5">
+        <View className="">
           {accountOption.map((item, index) => {
             return (
               <Animated.View
                 entering={FadeInDown.delay(index * 50)
                   .springify()
                   .damping(80)}
-                style={styles.listItem}
+                className=""
                 key={index}
               >
                 <TouchableOpacity
-                  style={styles.flexRow}
+                  className="flex-row items-center gap-2.5 mt-2.5"
                   onPress={() =>
                     item.onPress ? item.onPress() : handleOnPress(item)
                   }
                 >
                   {/* icon */}
                   <View
-                    style={[
-                      styles.listIcon,
-                      {
-                        backgroundColor: item?.bgColor,
-                      },
-                    ]}
+                    className="items-center justify-center rounded-2xl"
+                    style={{
+                      height: verticalScale(22),
+                      width: verticalScale(22),
+                      backgroundColor: item?.bgColor ?? colors.neutral500,
+                    }}
                   >
                     {item.icon && item.icon}
                   </View>
 
                   {/* title */}
-                  <Typo size={16} style={{ flex: 1 }} fontWeight={"500"}>
+                  <Typo size={8} style={{ flex: 1 }} fontWeight={"500"}>
                     {item?.title}
                   </Typo>
 
                   {!item.value ? (
                     <CaretRightIcon
-                      size={verticalScale(20)}
+                      size={verticalScale(12)}
                       weight="bold"
                       color={colors.primary}
                     />
                   ) : (
                     <Typo
-                      size={16}
                       fontWeight={"500"}
                       color={colors.neutral600}
-                      style={{
-                        backgroundColor: colors.neutral100,
-                        paddingHorizontal: 15,
-                        paddingVertical: 5,
-                        borderRadius: radius._10,
-                      }}
+                      className="rounded-lg bg-neutral-100 px-4 py-1.5"
                     >
                       {item.value}
                     </Typo>
@@ -153,9 +146,9 @@ const preference = () => {
         <TouchableWithoutFeedback
           onPress={() => setEditClosingDateModal(false)}
         >
-          <View style={styles.modalOverlay}>
+          <View className="flex-1 items-center justify-center bg-black/50 p-5">
             <TouchableWithoutFeedback>
-              <View style={styles.modalBox}>
+              <View className="w-[85%] max-w-[400px] gap-4 rounded-2xl bg-white p-5">
                 <InputField
                   label="Edit Tanggal Tutup Buku"
                   type="number"
@@ -163,7 +156,7 @@ const preference = () => {
                   onChangeText={(t) => handleChangeClosingDate(t)}
                 />
                 <Button onPress={submitClosingDate}>
-                  <Typo>Save</Typo>
+                  <Typo color={colors.text}>Save</Typo>
                 </Button>
               </View>
             </TouchableWithoutFeedback>
@@ -175,55 +168,3 @@ const preference = () => {
 };
 
 export default preference;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingHorizontal: spacingX._20,
-  },
-  listIcon: {
-    height: verticalScale(44),
-    width: verticalScale(44),
-    backgroundColor: colors.neutral500,
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: radius._15,
-    borderCurve: "continuous",
-  },
-  listItem: {
-    marginBottom: verticalScale(17),
-  },
-  accountOption: {
-    marginTop: spacingY._35,
-  },
-  flexRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: spacingX._10,
-  },
-  // modal
-  modalContent: {
-    flex: 1,
-    backgroundColor: "white",
-    padding: 20,
-    marginTop: "auto",
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.5)", // backdrop gelap
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 20,
-  },
-  modalBox: {
-    backgroundColor: "white",
-    borderRadius: 16,
-    padding: 20,
-    width: "85%", // ga full layar
-    maxWidth: 400, // biar elegan di tablet
-    alignSelf: "center",
-    gap: spacingY._15,
-  },
-});

@@ -6,7 +6,7 @@ import { Image } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
 import { UploadSimpleIcon, XCircleIcon } from "phosphor-react-native";
 import React from "react";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { TouchableOpacity, View } from "react-native";
 import Typo from "./Typo";
 
 const ImageUpload = ({
@@ -37,7 +37,15 @@ const ImageUpload = ({
       {!file && (
         <TouchableOpacity
           onPress={pickImage}
-          style={[styles.inputContainer, containerStyle && containerStyle]}
+          className="flex-row items-center justify-center rounded-2xl border border-dashed border-neutral-500 bg-neutral-700"
+          style={[
+            {
+              height: verticalScale(54),
+              borderRadius: radius._15,
+              gap: 10,
+            },
+            containerStyle && containerStyle,
+          ]}
         >
           <UploadSimpleIcon color={colors.neutral200} />
           {placeholder && <Typo size={15}>{placeholder}</Typo>}
@@ -45,14 +53,35 @@ const ImageUpload = ({
       )}
 
       {file && (
-        <View style={[styles.image, imageStyle && imageStyle]}>
+        <View
+          className="overflow-hidden"
+          style={[
+            {
+              height: scale(150),
+              width: scale(150),
+              borderRadius: radius._15,
+            },
+            imageStyle && imageStyle,
+          ]}
+        >
           <Image
             style={{ flex: 1 }}
             source={getFilePath(file)}
             contentFit="cover"
             transition={100}
           />
-          <TouchableOpacity style={styles.deleteIcon} onPress={onClear}>
+          <TouchableOpacity
+            className="absolute"
+            style={{
+              top: scale(6),
+              right: scale(6),
+              shadowColor: colors.black,
+              shadowOffset: { width: 0, height: 5 },
+              shadowOpacity: 1,
+              shadowRadius: 10,
+            }}
+            onPress={onClear}
+          >
             <XCircleIcon
               size={verticalScale(24)}
               weight="fill"
@@ -66,34 +95,3 @@ const ImageUpload = ({
 };
 
 export default ImageUpload;
-
-const styles = StyleSheet.create({
-  inputContainer: {
-    height: verticalScale(54),
-    backgroundColor: colors.neutral700,
-    borderRadius: radius._15,
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    gap: 10,
-    borderWidth: 1,
-    borderColor: colors.neutral500,
-    borderStyle: "dashed",
-  },
-  image: {
-    height: scale(150),
-    width: scale(150),
-    borderRadius: radius._15,
-    borderCurve: "continuous",
-    overflow: "hidden",
-  },
-  deleteIcon: {
-    position: "absolute",
-    top: scale(6),
-    right: scale(6),
-    shadowColor: colors.black,
-    shadowOffset: { width: 0, height: 5 },
-    shadowOpacity: 1,
-    shadowRadius: 10,
-  },
-});

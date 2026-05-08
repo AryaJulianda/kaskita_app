@@ -3,13 +3,13 @@ import Header from "@/components/Header";
 import Loading from "@/components/Loading";
 import ModalWrapper from "@/components/ModalWrapper";
 import Typo from "@/components/Typo";
-import { colors, spacingX, spacingY } from "@/constants/theme";
+import { colors, spacingY } from "@/constants/theme";
 import { useTransactionCategoryStore } from "@/stores/transactionCategoryStore";
 import { verticalScale } from "@/utils/styling";
 import { useRouter } from "expo-router";
 import { PlusCircleIcon } from "phosphor-react-native";
 import React, { useEffect } from "react";
-import { FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
+import { FlatList, TouchableOpacity, View } from "react-native";
 
 const index = () => {
   const router = useRouter();
@@ -36,13 +36,13 @@ const index = () => {
             <PlusCircleIcon
               weight="fill"
               color={colors.primary}
-              size={verticalScale(33)}
+              size={verticalScale(24)}
             />
           </TouchableOpacity>
         }
         style={{ marginBottom: spacingY._10 }}
       />
-      <View style={styles.container}>
+      <View className="flex-1 px-5">
         {isLoading ? (
           <Loading />
         ) : (
@@ -51,20 +51,20 @@ const index = () => {
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
               <TouchableOpacity
-                style={styles.card}
+                className="mb-2.5 rounded-lg bg-white p-2.5 shadow-sm"
                 onPress={async () => {
                   await getDetailTransactionCategory(item.id);
                   router.push(`/transactionCategoryModal/edit`);
                 }}
               >
-                <Typo size={14}>{item.name}</Typo>
+                <Typo>{item.name}</Typo>
               </TouchableOpacity>
             )}
             // refreshControl={
             //   <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
             // }
             ListEmptyComponent={
-              <Typo color="gray" style={{ textAlign: "center", marginTop: 20 }}>
+              <Typo color="gray" className="mt-5 text-center">
                 Transactin Categories Not Found
               </Typo>
             }
@@ -76,20 +76,3 @@ const index = () => {
 };
 
 export default index;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingHorizontal: spacingX._20,
-  },
-  card: {
-    padding: 10,
-    backgroundColor: "white",
-    shadowColor: "#000",
-    marginBottom: 10,
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-    borderRadius: 8,
-  },
-});

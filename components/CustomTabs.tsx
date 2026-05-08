@@ -67,11 +67,9 @@ export function CustomTabs({
   return (
     <View className="items-center bg-white">
       <View
-        className="w-full flex-row items-center justify-around bg-white"
-        style={{
-          height: Platform.OS === "ios" ? 72 : 56,
-          maxWidth: Platform.OS === "web" ? 430 : undefined,
-        }}
+        className={`w-full flex-row items-center justify-around bg-white ${
+          Platform.OS === "ios" ? "h-[72px]" : "h-[56px]"
+        } ${Platform.OS === "web" ? "max-w-[430px]" : ""}`}
       >
         {state.routes.map((route, index) => {
           const { options } = descriptors[route.key];
@@ -117,9 +115,7 @@ export function CustomTabs({
                   ? "relative -top-4 h-12 w-12 items-center justify-center rounded-full border-2 border-neutral-900 bg-white"
                   : "flex-1 items-center justify-center"
               }
-              style={{
-                marginBottom: Platform.OS === "ios" ? 10 : 6,
-              }}
+              style={{ marginBottom: Platform.OS === "ios" ? 10 : 6 }}
             >
               {tabbarIcons[route.name] && tabbarIcons[route.name](isFocused)}
             </TouchableOpacity>

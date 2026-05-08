@@ -1,10 +1,8 @@
 import Typo from "@/components/Typo";
-import { colors, spacingY } from "@/constants/theme";
+import { colors } from "@/constants/theme";
 import { createLoanForm, editLoanForm } from "@/stores/loanStore";
-import { scale } from "@/utils/styling";
-import { useRouter } from "expo-router";
 import React, { useState } from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
+import { ScrollView, View } from "react-native";
 import Button from "../Button";
 import { InputField } from "../InputField";
 
@@ -21,8 +19,6 @@ const LoanForm = <T extends createLoanForm | editLoanForm>({
   loading,
   type,
 }: LoanProps<T>) => {
-  const router = useRouter();
-
   const [form, setForm] = useState<T>({
     principal: "0",
     remaining_balance: "0",
@@ -56,7 +52,7 @@ const LoanForm = <T extends createLoanForm | editLoanForm>({
       ...form,
       principal: String(parseInt(form.principal.replace(/\./g, ""), 10)),
       remaining_balance: String(
-        parseInt(form.remaining_balance.replace(/\./g, ""), 10)
+        parseInt(form.remaining_balance.replace(/\./g, ""), 10),
       ),
     } as T);
   };
@@ -64,44 +60,47 @@ const LoanForm = <T extends createLoanForm | editLoanForm>({
   return (
     <View style={{ flex: 1 }}>
       <ScrollView
-        contentContainerStyle={styles.form}
         showsVerticalScrollIndicator={false}
+        contentContainerClassName="px-5 pt-4 pb-12"
       >
-        {/* Loan Name */}
-        <InputField
-          label="Nama Pinjaman"
-          value={form.name}
-          onChangeText={(val) => setForm({ ...form, name: val })}
-        />
+        <View className="flex-col gap-2.5">
 
-        {/* Principal Amount */}
-        <InputField
-          label="Nilai Pinjaman Awal"
-          type="number"
-          value={form.principal}
-          onChangeText={handlePrincipalChange}
-        />
+          {/* Loan Name */}
+          <InputField
+            label="Nama Pinjaman"
+            value={form.name}
+            onChangeText={(val) => setForm({ ...form, name: val })}
+          />
 
-        {/* Remaining Balance */}
-        <InputField
-          label="Sisa Pinjaman"
-          type="number"
-          value={form.remaining_balance}
-          onChangeText={handleRemainingChange}
-        />
+          {/* Principal Amount */}
+          <InputField
+            label="Nilai Pinjaman Awal"
+            type="number"
+            value={form.principal}
+            onChangeText={handlePrincipalChange}
+          />
 
-        {/* Due Date */}
-        <InputField
-          label="Jatuh Tempo"
-          placeholder="YYYY-MM-DD"
-          value={form.due_date ?? ""}
-          onChangeText={(val) => setForm({ ...form, due_date: val })}
-        />
+          {/* Remaining Balance */}
+          <InputField
+            label="Sisa Pinjaman"
+            type="number"
+            value={form.remaining_balance}
+            onChangeText={handleRemainingChange}
+          />
+
+          {/* Due Date */}
+          <InputField
+            label="Jatuh Tempo"
+            placeholder="YYYY-MM-DD"
+            value={form.due_date ?? ""}
+            onChangeText={(val) => setForm({ ...form, due_date: val })}
+          />
+        </View>
       </ScrollView>
 
-      <View style={styles.footer}>
+      <View className="flex-row items-center justify-center gap-3 border-t border-primary px-5 pt-4">
         <Button onPress={handleSubmit} loading={loading} style={{ flex: 1 }}>
-          <Typo color={colors.black} fontWeight={"700"}>
+          <Typo color={colors.text} fontWeight={"700"}>
             {type === "Add" ? "Tambah Pinjaman" : "Simpan Pinjaman"}
           </Typo>
         </Button>
@@ -111,22 +110,3 @@ const LoanForm = <T extends createLoanForm | editLoanForm>({
 };
 
 export default LoanForm;
-
-const styles = StyleSheet.create({
-  form: {
-    gap: spacingY._20,
-    marginTop: spacingY._15,
-    paddingBottom: spacingY._50,
-    paddingHorizontal: spacingY._20,
-  },
-  footer: {
-    alignItems: "center",
-    flexDirection: "row",
-    justifyContent: "center",
-    gap: scale(12),
-    paddingTop: spacingY._15,
-    borderTopColor: colors.primary,
-    borderTopWidth: 1,
-    paddingHorizontal: spacingY._20,
-  },
-});

@@ -4,17 +4,15 @@ import { InputField } from "@/components/InputField";
 import { SelectInput } from "@/components/SelectInput";
 import Typo from "@/components/Typo";
 import { SOURCE_PATH } from "@/constants";
-import { colors, spacingY } from "@/constants/theme";
+import { colors } from "@/constants/theme";
 import { useImageStore } from "@/stores/imageStore";
 import { TransactionFormData } from "@/stores/transactionStore";
-import { scale } from "@/utils/styling";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
   Alert,
   ScrollView,
-  StyleSheet,
   Switch,
   TouchableOpacity,
   View,
@@ -187,36 +185,31 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
   };
 
   return (
-    <View style={{ flex: 1 }}>
+    <View className="flex-1">
       <ScrollView
-        contentContainerStyle={styles.form}
+        contentContainerClassName="mt-4 gap-5 px-5 pb-14"
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
       >
         {/* Type Selector */}
-        <View style={styles.inputContainer}>
+        <View className="gap-2.5">
           <Typo color={colors.neutral500} fontWeight={"medium"}>
             Type
           </Typo>
-          <View style={styles.typeContainer}>
+          <View className="flex-row flex-wrap justify-start rounded-2xl border border-neutral-200 p-1.5">
             {["INCOME", "EXPENSES", "TRANSFER", "SAVING", "LOAN"].map((t) => (
               <TouchableOpacity
                 disabled={form.id != ""}
                 key={t}
                 onPress={() => setForm({ ...form, type: t })}
-                style={[
-                  styles.typeButton,
-                  form.type === t && {
-                    borderColor: getTypeColor(t),
-                    backgroundColor: "white",
-                  },
-                ]}
+                className="m-1.5 items-center rounded-full border border-transparent bg-neutral-100 px-4 py-2.5"
+                style={
+                  form.type === t
+                    ? { borderColor: getTypeColor(t), backgroundColor: "white" }
+                    : undefined
+                }
               >
-                <Typo
-                  size={15}
-                  style={{ textAlign: "center" }}
-                  fontWeight={"semibold"}
-                >
+                <Typo size={8} className="text-center" fontWeight={"semibold"}>
                   {t}
                 </Typo>
               </TouchableOpacity>
@@ -227,32 +220,33 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
           <>
             {form.type == "SAVING" ? (
               <>
-                <View style={styles.inputContainer}>
+                <View className="gap-2.5">
                   <Typo
                     color={colors.neutral500}
                     fontWeight={"medium"}
-                    style={{ textTransform: "capitalize" }}
+                    className="capitalize"
                   >
                     Type {form.type.toLocaleLowerCase()}
                   </Typo>
-                  <View style={styles.typeContainer}>
+                  <View className="flex-row flex-wrap justify-start rounded-full border border-neutral-200 p-1.5">
                     {["IN", "OUT"].map((t) => (
                       <TouchableOpacity
                         disabled={form.id != ""}
                         key={t}
                         onPress={() => setForm({ ...form, reference_type: t })}
-                        style={[
-                          styles.typeButton,
-                          { flex: 1 },
-                          form.reference_type === t && {
-                            borderColor: colors.neutral900,
-                            backgroundColor: "white",
-                          },
-                        ]}
+                        className="m-1.5 flex-1 items-center rounded-full border border-transparent bg-neutral-100 px-4 py-2.5"
+                        style={
+                          form.reference_type === t
+                            ? {
+                                borderColor: colors.neutral900,
+                                backgroundColor: "white",
+                              }
+                            : undefined
+                        }
                       >
                         <Typo
-                          size={15}
-                          style={{ textAlign: "center" }}
+                          size={8}
+                          className="text-center"
                           fontWeight={"semibold"}
                         >
                           {t}
@@ -298,17 +292,6 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
               </>
             )}
 
-            {/* <View
-              style={{
-                marginVertical: -10,
-                justifyContent: "center",
-                flexDirection: "row",
-                alignItems: "center",
-              }}
-            >
-              <ArrowDownIcon color={colors.neutral400} />
-            </View> */}
-
             <SelectInput
               label="Asset"
               labelModal="Assets"
@@ -322,13 +305,13 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
         )}
 
         {/* Date & Time */}
-        <View style={[styles.inputContainer, styles.rowBetween]}>
-          <View style={{ flex: 1, marginRight: 8 }}>
+        <View className="flex-row justify-between gap-4">
+          <View className="flex-1">
             <Typo color={colors.neutral500} fontWeight={"medium"}>
               Date
             </Typo>
             <TouchableOpacity
-              style={styles.dateBox}
+              className="mt-1 rounded-lg border border-neutral-200 p-2"
               onPress={() => setShowDatePicker(true)}
             >
               <Typo color={colors.textLight}>
@@ -347,12 +330,12 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
             )}
           </View>
 
-          <View style={{ flex: 1, marginLeft: 8 }}>
+          <View className="flex-1">
             <Typo color={colors.neutral500} fontWeight={"medium"}>
               Time
             </Typo>
             <TouchableOpacity
-              style={styles.dateBox}
+              className="mt-1 rounded-lg border border-neutral-200 p-2"
               onPress={() => setShowTimePicker(true)}
             >
               <Typo color={colors.textLight}>
@@ -466,12 +449,12 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
         />
 
         {showRoutineOptions && (
-          <View style={styles.routineContainer}>
-            <View style={{ flex: 1 }}>
+          <View className="flex-row items-center justify-between rounded-lg border border-neutral-200 px-2.5 py-2.5">
+            <View className="flex-1">
               <Typo fontWeight="medium" color={colors.neutral500}>
                 Transaksi Rutin
               </Typo>
-              <Typo size={12} color={colors.neutral500}>
+              <Typo color={colors.neutral500}>
                 Aktifkan jika transaksi ini berulang
               </Typo>
             </View>
@@ -497,7 +480,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
         )}
 
         {form.is_routine && showRoutineOptions && (
-          <View style={{ gap: spacingY._15 }}>
+          <View className="gap-4">
             {/* Frequency */}
             <SelectInput
               label="Frekuensi"
@@ -523,7 +506,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
             {/* MONTHLY */}
             {form.frequency === "MONTHLY" && (
               <InputField
-                label="Tanggal tiap bulan (1–31)"
+                label="Tanggal tiap bulan (1-31)"
                 type="number"
                 value={String(form.day_of_month ?? "")}
                 onChangeText={(val) =>
@@ -574,7 +557,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
             {form.frequency === "YEARLY" && (
               <>
                 <InputField
-                  label="Tanggal (1–31)"
+                  label="Tanggal (1-31)"
                   type="number"
                   value={String(form.day_of_month ?? "")}
                   onChangeText={(val) =>
@@ -586,7 +569,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
                 />
 
                 <InputField
-                  label="Bulan (1–12)"
+                  label="Bulan (1-12)"
                   type="number"
                   value={String(form.month_of_year ?? "")}
                   onChangeText={(val) =>
@@ -600,12 +583,12 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
             )}
 
             {/* Reminder */}
-            <View style={styles.routineContainer}>
-              <View style={{ flex: 1 }}>
+            <View className="flex-row items-center justify-between rounded-lg border border-neutral-200 px-2.5 py-2.5">
+              <View className="flex-1">
                 <Typo fontWeight="medium" color={colors.neutral500}>
                   Reminder
                 </Typo>
-                <Typo size={12} color={colors.neutral500}>
+                <Typo color={colors.neutral500}>
                   Ingatkan H-1 sebelum transaksi
                 </Typo>
               </View>
@@ -623,27 +606,13 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
               />
             </View>
 
-            {/* {form.is_reminder_enabled && (
-              <InputField
-                label="Reminder H-berapa"
-                type="number"
-                value={String(form.reminder_days_before ?? 0)}
-                onChangeText={(val) =>
-                  setForm({
-                    ...form,
-                    reminder_days_before: Number(val),
-                  })
-                }
-              />
-            )} */}
-
             {/* Reminder */}
-            <View style={styles.routineContainer}>
-              <View style={{ flex: 1 }}>
+            <View className="flex-row items-center justify-between rounded-lg border border-neutral-200 px-2.5 py-2.5">
+              <View className="flex-1">
                 <Typo fontWeight="medium" color={colors.neutral500}>
                   Catat Otomatis
                 </Typo>
-                <Typo size={12} color={colors.neutral500}>
+                <Typo color={colors.neutral500}>
                   Catat transaksi secara otomatis sesuai jadwal
                 </Typo>
               </View>
@@ -664,9 +633,9 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
         )}
       </ScrollView>
 
-      <View style={styles.footer}>
+      <View className="flex-row items-center justify-center gap-3 border-t border-primary px-5 pt-4">
         <Button onPress={handleSubmit} loading={loading} style={{ flex: 1 }}>
-          <Typo color={colors.black} fontWeight={"700"}>
+          <Typo color={colors.text} fontWeight={"700"}>
             {submitLabel}
           </Typo>
         </Button>
@@ -693,61 +662,3 @@ const getTypeColor = (type: string) => {
       return "transparent";
   }
 };
-
-const styles = StyleSheet.create({
-  form: {
-    gap: spacingY._20,
-    marginTop: spacingY._15,
-    paddingBottom: spacingY._50,
-    paddingHorizontal: spacingY._20,
-  },
-  inputContainer: { gap: spacingY._10 },
-  dateBox: {
-    borderWidth: 1,
-    borderColor: colors.neutral200,
-    padding: 8,
-    borderRadius: 8,
-    marginTop: 4,
-  },
-  typeContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap", // enable wrapping to next row
-    justifyContent: "flex-start",
-    borderWidth: 1,
-    borderColor: colors.neutral200,
-    borderRadius: 30,
-    padding: 5,
-  },
-  typeButton: {
-    // flex: 1,
-    borderRadius: 100,
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    borderWidth: 1,
-    borderColor: "transparent",
-    margin: 6, // spacing between buttons and allow wrap
-    alignItems: "center",
-    backgroundColor: colors.neutral100,
-  },
-  rowBetween: { flexDirection: "row", justifyContent: "space-between" },
-  routineContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingVertical: spacingY._10,
-    paddingHorizontal: spacingY._10,
-    borderWidth: 1,
-    borderColor: colors.neutral200,
-    borderRadius: 10,
-  },
-  footer: {
-    alignItems: "center",
-    flexDirection: "row",
-    justifyContent: "center",
-    gap: scale(12),
-    paddingTop: spacingY._15,
-    borderTopColor: colors.primary,
-    borderTopWidth: 1,
-    paddingHorizontal: spacingY._20,
-  },
-});

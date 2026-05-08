@@ -1,9 +1,7 @@
 import Typo from "@/components/Typo";
-import { colors, spacingY } from "@/constants/theme";
-import { scale } from "@/utils/styling";
-import { useRouter } from "expo-router";
+import { colors } from "@/constants/theme";
 import React, { useState } from "react";
-import { Alert, ScrollView, StyleSheet, View } from "react-native";
+import { Alert, ScrollView, View } from "react-native";
 import Button from "../Button";
 import { InputField } from "../InputField";
 import { SelectInput } from "../SelectInput";
@@ -30,7 +28,6 @@ const AssetForm: React.FC<AssetFormProps> = ({
   loading,
   submitLabel = "Add Asset",
 }) => {
-  const router = useRouter();
   const [form, setForm] = useState<AssetFormData>({
     id: "",
     name: "",
@@ -62,38 +59,41 @@ const AssetForm: React.FC<AssetFormProps> = ({
   return (
     <View style={{ flex: 1 }}>
       <ScrollView
-        contentContainerStyle={styles.form}
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
+        contentContainerClassName="px-5 pt-4 pb-12"
       >
-        {/* Asset Name */}
-        <InputField
-          label="Asset Name"
-          value={form.name}
-          onChangeText={(val) => setForm({ ...form, name: val })}
-        />
+        <View className="flex-col gap-2.5">
+          {/* Asset Name */}
+          <InputField
+            label="Asset Name"
+            value={form.name}
+            onChangeText={(val) => setForm({ ...form, name: val })}
+          />
 
-        {/* Asset Category */}
-        <SelectInput
-          label="Asset Category"
-          labelModal="Assets"
-          value={categories.find((c) => c.id === form.category_id)?.name || ""}
-          listItems={categories}
-          onSelect={(cat) => setForm({ ...form, category_id: cat.id })}
-        />
+          {/* Asset Category */}
+          <SelectInput
+            label="Asset Category"
+            labelModal="Assets"
+            value={
+              categories.find((c) => c.id === form.category_id)?.name || ""
+            }
+            listItems={categories}
+            onSelect={(cat) => setForm({ ...form, category_id: cat.id })}
+          />
 
-        <InputField
-          label={form.id ? "Adjust Balance" : "Initial Balance"}
-          type="number"
-          value={form.balance}
-          onChangeText={handleBalanceChange}
-        />
-        {/* )} */}
+          <InputField
+            label={form.id ? "Adjust Balance" : "Initial Balance"}
+            type="number"
+            value={form.balance}
+            onChangeText={handleBalanceChange}
+          />
+        </View>
       </ScrollView>
 
-      <View style={styles.footer}>
+      <View className="flex-row items-center justify-center gap-3 border-t border-primary px-5 pt-4">
         <Button onPress={handleSubmit} loading={loading} style={{ flex: 1 }}>
-          <Typo color={colors.black} fontWeight={"700"}>
+          <Typo color={colors.text} fontWeight={"700"}>
             {submitLabel}
           </Typo>
         </Button>
@@ -103,22 +103,3 @@ const AssetForm: React.FC<AssetFormProps> = ({
 };
 
 export default AssetForm;
-
-const styles = StyleSheet.create({
-  form: {
-    gap: spacingY._20,
-    marginTop: spacingY._15,
-    paddingBottom: spacingY._50,
-    paddingHorizontal: spacingY._20,
-  },
-  footer: {
-    alignItems: "center",
-    flexDirection: "row",
-    justifyContent: "center",
-    gap: scale(12),
-    paddingTop: spacingY._15,
-    borderTopColor: colors.primary,
-    borderTopWidth: 1,
-    paddingHorizontal: spacingY._20,
-  },
-});

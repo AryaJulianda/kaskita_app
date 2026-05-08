@@ -1,27 +1,17 @@
 import BackButton from "@/components/BackButton";
 import Button from "@/components/Button";
 import Header from "@/components/Header";
-import Input from "@/components/Input";
+import { InputField } from "@/components/InputField";
 import ModalWrapper from "@/components/ModalWrapper";
 import Typo from "@/components/Typo";
-import { colors, spacingX, spacingY } from "@/constants/theme";
+import { colors, spacingY } from "@/constants/theme";
 import { useAuthStore } from "@/stores/authStore";
 import { useImageStore } from "@/stores/imageStore";
 import { UserDataType } from "@/types";
-import { getProfileImage } from "@/utils/getProfileImage";
-import { scale, verticalScale } from "@/utils/styling";
-import { Image } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
-import { PencilIcon } from "phosphor-react-native";
 import React, { useEffect, useState } from "react";
-import {
-  Alert,
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Alert, ScrollView, View } from "react-native";
 
 const ProfileModal = () => {
   const { updateProfile, isLoading, user, getProfile } = useAuthStore();
@@ -93,7 +83,7 @@ const ProfileModal = () => {
   };
   return (
     <ModalWrapper>
-      <View style={styles.container}>
+      <View className="flex-1 justify-between px-5">
         <Header
           title="Update Profile"
           leftIcon={<BackButton />}
@@ -101,23 +91,46 @@ const ProfileModal = () => {
         />
 
         {/* form */}
-        <ScrollView contentContainerStyle={styles.form}>
-          <View style={styles.avatarContainer}>
+        <ScrollView contentContainerClassName="mt-4 space-y-7">
+          {/* <View className="relative self-center">
             <Image
-              style={styles.avatar}
+              style={{
+                width: "80%",
+                margin: "auto",
+                aspectRatio: 1,
+                borderRadius: 200,
+                borderWidth: 1,
+                borderColor: colors.neutral500,
+                backgroundColor: colors.neutral300,
+              }}
               source={getProfileImage(userData.image)}
               contentFit="cover"
               transition={100}
             />
 
-            <TouchableOpacity style={styles.editIcon} onPress={onPickImage}>
-              <PencilIcon size={verticalScale(20)} color={colors.neutral800} />
+            <TouchableOpacity
+              className="absolute"
+              onPress={onPickImage}
+              style={{
+                bottom: spacingY._5,
+                right: spacingY._25,
+                borderRadius: 100,
+                backgroundColor: colors.neutral100,
+                padding: spacingY._5,
+                shadowColor: colors.black,
+                shadowOffset: { width: 0, height: 0 },
+                shadowOpacity: 0.25,
+                shadowRadius: 10,
+                elevation: 4,
+              }}
+            >
+              <PencilIcon size={verticalScale(12)} color={colors.neutral800} />
             </TouchableOpacity>
-          </View>
+          </View> */}
 
-          <View style={styles.inputContainer}>
-            <Typo color={colors.neutral200}>Name</Typo>
-            <Input
+          <View className="gap-2.5">
+            <Typo color={colors.textLight}>Name</Typo>
+            <InputField
               placeholder="Name"
               value={userData.name}
               onChangeText={(value) =>
@@ -129,9 +142,9 @@ const ProfileModal = () => {
       </View>
 
       {/* footer */}
-      <View style={styles.footer}>
+      <View className="mb-1 flex-row items-center justify-center gap-3 border-t border-neutral-700 px-5 pt-4">
         <Button onPress={onSubmit} loading={isLoading} style={{ flex: 1 }}>
-          <Typo color={colors.black} fontWeight={"700"}>
+          <Typo color={colors.text} fontWeight={"700"}>
             Update
           </Typo>
         </Button>
@@ -141,58 +154,3 @@ const ProfileModal = () => {
 };
 
 export default ProfileModal;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "space-between",
-    paddingHorizontal: spacingY._20,
-    // paddingVertical: spacingY._30,
-  },
-  footer: {
-    alignItems: "center",
-    flexDirection: "row",
-    justifyContent: "center",
-    paddingHorizontal: spacingX._20,
-    gap: scale(12),
-    paddingTop: spacingY._15,
-    borderTopColor: colors.neutral700,
-    marginBottom: spacingY._5,
-    borderTopWidth: 1,
-  },
-  form: {
-    gap: spacingY._30,
-    marginTop: spacingY._15,
-  },
-  avatarContainer: {
-    position: "relative",
-    alignSelf: "center",
-  },
-  avatar: {
-    alignSelf: "center",
-    backgroundColor: colors.neutral300,
-    height: verticalScale(135),
-    width: verticalScale(135),
-    borderRadius: 200,
-    borderWidth: 1,
-    borderColor: colors.neutral500,
-    // overflow: 'hidden',
-    // position: 'relative'
-  },
-  editIcon: {
-    position: "absolute",
-    bottom: spacingY._5,
-    right: spacingY._7,
-    borderRadius: 100,
-    backgroundColor: colors.neutral100,
-    shadowColor: colors.black,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.25,
-    shadowRadius: 10,
-    elevation: 4,
-    padding: spacingY._7,
-  },
-  inputContainer: {
-    gap: spacingY._10,
-  },
-});

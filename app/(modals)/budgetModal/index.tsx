@@ -3,11 +3,11 @@ import Header from "@/components/Header";
 import Loading from "@/components/Loading";
 import ModalWrapper from "@/components/ModalWrapper";
 import Typo from "@/components/Typo";
-import { colors, spacingX, spacingY } from "@/constants/theme";
+import { colors, spacingY } from "@/constants/theme";
 import { useTransactionCategoryStore } from "@/stores/transactionCategoryStore";
 import { useRouter } from "expo-router";
 import React, { useEffect } from "react";
-import { FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
+import { FlatList, TouchableOpacity, View } from "react-native";
 
 // ✅ helper untuk format Rupiah
 const formatRupiah = (value: number) => {
@@ -47,13 +47,13 @@ const index = () => {
         // }
         style={{ marginBottom: spacingY._10 }}
       />
-      <View style={styles.container}>
+      <View className="flex-1 px-5">
         {isLoading ? (
           <Loading />
         ) : (
           <FlatList
             data={transactionCategories.filter(
-              (item) => item.type == "EXPENSES"
+              (item) => item.type == "EXPENSES",
             )}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => {
@@ -64,16 +64,15 @@ const index = () => {
 
               return (
                 <TouchableOpacity
-                  style={styles.card}
+                  className="mb-3 rounded-xl bg-white p-3 shadow-sm"
                   onPress={async () => {
                     await getDetailTransactionCategory(item.id);
                     router.push(`/budgetModal/edit`);
                   }}
                 >
-                  <View style={styles.cardHeader}>
-                    <Typo size={15}>{item.name}</Typo>
+                  <View className="flex-row items-center justify-between">
+                    <Typo>{item.name}</Typo>
                     <Typo
-                      size={14}
                       color={item.base_budget ? "black" : "gray"}
                       style={{
                         fontStyle: item.base_budget ? "normal" : "italic",
@@ -86,7 +85,7 @@ const index = () => {
               );
             }}
             ListEmptyComponent={
-              <Typo color="gray" style={{ textAlign: "center", marginTop: 20 }}>
+              <Typo color="gray" className="mt-5 text-center">
                 Transaction Categories Not Found
               </Typo>
             }
@@ -98,25 +97,3 @@ const index = () => {
 };
 
 export default index;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingHorizontal: spacingX._20,
-  },
-  card: {
-    padding: 12,
-    backgroundColor: "white",
-    marginBottom: 12,
-    borderRadius: 12,
-    shadowColor: "#000",
-    shadowOpacity: 0.05,
-    shadowRadius: 3,
-    elevation: 1,
-  },
-  cardHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-});

@@ -1,13 +1,13 @@
-import { colors, radius } from "@/constants/theme";
-import { verticalScale } from "@/utils/styling";
+import { colors } from "@/constants/theme";
 import React from "react";
 import {
   FlatList,
   Modal,
-  StyleSheet,
+  Platform,
   TouchableOpacity,
   View,
 } from "react-native";
+import Button from "./Button";
 import Typo from "./Typo";
 
 interface SelectModalProps {
@@ -29,29 +29,26 @@ export const SelectModal = ({
 }: SelectModalProps) => {
   const renderItem = ({ item }: any) => (
     <TouchableOpacity
-      style={styles.item}
+      className="flex-1 items-center justify-center rounded-lg border border-neutral-200 py-5 m-1"
       onPress={() => {
         onSelect(item);
       }}
     >
-      <Typo size={verticalScale(12)} style={styles.label}>
+      <Typo size={6} className="text-center">
         {item.name}
       </Typo>
     </TouchableOpacity>
   );
-
   return (
     <Modal visible={visible} animationType="slide" transparent>
-      <View style={styles.modalOverlay}>
-        <View style={styles.modalContent}>
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginBottom: 10,
-            }}
-          >
+      <View className="flex-1 items-center justify-end bg-black/50 pb-[15px]">
+        <View
+          className={[
+            "max-h-[80%] rounded-xl bg-white p-4",
+            Platform.OS === "web" ? "w-[430px]" : "w-full",
+          ].join(" ")}
+        >
+          <View className="mb-2.5 flex-row items-center justify-between">
             <Typo fontWeight={"semibold"}>{labelModal}</Typo>
             {editButton}
           </View>
@@ -64,65 +61,11 @@ export const SelectModal = ({
             columnWrapperStyle={{ justifyContent: "space-between" }}
           />
 
-          <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
-            <Typo style={{ color: "#000" }}>Close</Typo>
-          </TouchableOpacity>
+          <Button onPress={onClose}>
+            <Typo color={colors.text}>Close</Typo>
+          </Button>
         </View>
       </View>
     </Modal>
   );
 };
-
-const styles = StyleSheet.create({
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.5)",
-    justifyContent: "flex-end",
-    alignItems: "center",
-    paddingBottom: 15,
-  },
-  modalContent: {
-    backgroundColor: "#fff",
-    padding: 16,
-    borderRadius: 12,
-    width: "90%",
-    maxHeight: "80%",
-  },
-  title: {
-    fontSize: verticalScale(18),
-    fontWeight: "bold",
-    marginBottom: 12,
-    color: colors.textLight,
-  },
-  item: {
-    flex: 1,
-    borderWidth: 1,
-    borderColor: colors.neutral200,
-    borderRadius: 8,
-    paddingVertical: 20,
-    margin: 4,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  emoji: {
-    fontSize: 24,
-    marginBottom: 6,
-  },
-  label: {
-    textAlign: "center",
-  },
-  closeBtn: {
-    marginTop: 16,
-    backgroundColor: colors.blue,
-    padding: 12,
-    borderRadius: 8,
-    alignItems: "center",
-  },
-  button: {
-    backgroundColor: colors.neutral50,
-    alignSelf: "flex-end",
-    borderRadius: radius._12,
-    borderCurve: "continuous",
-    padding: 5,
-  },
-});
