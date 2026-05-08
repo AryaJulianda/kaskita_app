@@ -1,9 +1,10 @@
 import Typo from "@/components/Typo";
 import { colors } from "@/constants/theme";
 import { useTransactionStore } from "@/stores/transactionStore";
+import { Picker } from "@react-native-picker/picker";
 import { CaretLeftIcon, CaretRightIcon } from "phosphor-react-native";
 import React, { useState } from "react";
-import { Modal, ScrollView, TouchableOpacity, View } from "react-native";
+import { Modal, TouchableOpacity, View } from "react-native";
 
 function formatMonthYear(date: Date) {
   const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -105,7 +106,7 @@ export default function MonthPicker({ value, onChange }: MonthPickerProps) {
       >
         <View className="flex-1 items-center justify-center bg-black/20">
           <View className="w-72 items-center rounded-xl bg-white p-5">
-            <Typo size={14} fontWeight="bold" style={{ marginBottom: 12 }}>
+            <Typo size={7} fontWeight="bold" style={{ marginBottom: 12 }}>
               Pilih Bulan
             </Typo>
             <View className="flex-row flex-wrap justify-center">
@@ -129,41 +130,31 @@ export default function MonthPicker({ value, onChange }: MonthPickerProps) {
                 </TouchableOpacity>
               ))}
             </View>
-            <Typo size={14} fontWeight="bold" style={{ marginVertical: 12 }}>
+            <Typo size={7} fontWeight="bold" style={{ marginVertical: 12 }}>
               Pilih Tahun
             </Typo>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              {[...Array(7)].map((_, i) => {
-                const year = currentYear - 3 + i;
-                return (
-                  <TouchableOpacity
-                    key={year}
-                    className={
-                      year === selectedYear
-                        ? "m-1.5 rounded-md bg-neutral-900 px-3 py-2"
-                        : "m-1.5 rounded-md bg-neutral-100 px-3 py-2"
-                    }
-                    onPress={() => handleSelectYear(year)}
-                  >
-                    <Typo
-                      color={
-                        year === selectedYear ? colors.white : colors.neutral800
-                      }
-                    >
-                      {year}
-                    </Typo>
-                  </TouchableOpacity>
-                );
-              })}
-            </ScrollView>
+            <View className="w-full rounded-md border border-neutral-200">
+              <Picker
+                selectedValue={selectedYear}
+                onValueChange={(value) => handleSelectYear(Number(value))}
+                className="py-2 px-2 font-bold"
+              >
+                {[...Array(7)].map((_, i) => {
+                  const year = currentYear - 3 + i;
+                  return (
+                    <Picker.Item key={year} label={`${year}`} value={year} />
+                  );
+                })}
+              </Picker>
+            </View>
             <View className="w-full flex-row items-center justify-between gap-2">
               <TouchableOpacity
                 className="mt-4 w-1/2 rounded-lg bg-neutral-100 px-6 py-2"
                 onPress={() => setPickerVisible(false)}
               >
                 <Typo
-                  size={12}
                   color={colors.neutral800}
+                  fontWeight="bold"
                   style={{ textAlign: "center" }}
                 >
                   Tutup
@@ -176,7 +167,6 @@ export default function MonthPicker({ value, onChange }: MonthPickerProps) {
                 <Typo
                   color={colors.white}
                   fontWeight="bold"
-                  size={12}
                   style={{ textAlign: "center" }}
                 >
                   Confirm

@@ -10,8 +10,8 @@ import { useTransactionStore } from "@/stores/transactionStore";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { useFocusEffect } from "expo-router";
 import React, { useCallback, useMemo } from "react";
-import { Dimensions, FlatList, StyleSheet, View } from "react-native";
-import { PieChart } from "react-native-chart-kit";
+import { Dimensions, FlatList, View } from "react-native";
+import Svg, { Circle, Path } from "react-native-svg";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -33,6 +33,7 @@ type ChartDataItem = Omit<
   "total_amount"
 > & {
   total_amount: number;
+  population: number;
   color: string;
   legendFontColor: string;
   legendFontSize: number;
@@ -44,21 +45,22 @@ interface LegendItemProps {
 }
 
 const LegendItem: React.FC<LegendItemProps> = ({ item, totalAmount }) => {
-  const percent = ((item.total_amount / totalAmount) * 100).toFixed(1);
+  const percent = totalAmount
+    ? ((item.total_amount / totalAmount) * 100).toFixed(1)
+    : "0.0";
   return (
-    <View style={styles.legendItem}>
-      <View style={[styles.colorBox, { backgroundColor: item.color }]}>
-        <Typo size={16} fontWeight={"semibold"}>
+    <View className="mb-1.5 flex-row items-center">
+      <View
+        className="mr-2 py-2 w-20 items-center justify-center rounded "
+        style={{ backgroundColor: item.color }}
+      >
+        <Typo size={7} fontWeight={"semibold"}>
           {percent}%
         </Typo>
       </View>
       <View>
-        <Typo size={14} fontWeight={"semibold"}>
-          {item.name}{" "}
-        </Typo>
-        <Typo size={14} fontWeight={"medium"}>
-          {formatCurrency(item.total_amount)}
-        </Typo>
+        <Typo fontWeight={"semibold"}>{item.name} </Typo>
+        <Typo fontWeight={"medium"}>{formatCurrency(item.total_amount)}</Typo>
       </View>
     </View>
   );
@@ -67,6 +69,33 @@ const LegendItem: React.FC<LegendItemProps> = ({ item, totalAmount }) => {
 interface TransactionChartProps {
   type: "INCOME" | "EXPENSES";
 }
+
+const polarToCartesian = (cx: number, cy: number, r: number, angle: number) => {
+  const rad = ((angle - 90) * Math.PI) / 180.0;
+  return {
+    x: cx + r * Math.cos(rad),
+    y: cy + r * Math.sin(rad),
+  };
+};
+
+const describeArc = (
+  cx: number,
+  cy: number,
+  r: number,
+  startAngle: number,
+  endAngle: number,
+) => {
+  const start = polarToCartesian(cx, cy, r, endAngle);
+  const end = polarToCartesian(cx, cy, r, startAngle);
+  const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
+
+  return [
+    `M ${cx} ${cy}`,
+    `L ${start.x} ${start.y}`,
+    `A ${r} ${r} 0 ${largeArcFlag} 0 ${end.x} ${end.y}`,
+    "Z",
+  ].join(" ");
+};
 
 const TransactionChart: React.FC<TransactionChartProps> = ({ type }) => {
   const {
@@ -96,12 +125,18 @@ const TransactionChart: React.FC<TransactionChartProps> = ({ type }) => {
       data?.map((item, index) => ({
         ...item,
         total_amount: parseFloat(item.total_amount),
+        population: parseFloat(item.total_amount),
         color: chartColors[index % chartColors.length],
         legendFontColor: "#7F7F7F",
         legendFontSize: 15,
       })) || []
     );
   }, [data]);
+
+  const chartSize = Math.min(screenWidth - 20, 240);
+  const radius = chartSize / 2;
+  const center = radius;
+  const hasChartData = totalAmount > 0 && chartData.length > 0;
 
   const [month, year] = trxDate.split("-");
 
@@ -119,16 +154,14 @@ const TransactionChart: React.FC<TransactionChartProps> = ({ type }) => {
           type,
         });
       }
-    }, [selectedYear, trxDate, chartType, type])
+    }, [selectedYear, trxDate, chartType, type]),
   );
 
   return (
     <ScreenWrapper>
-      <View style={styles.container}>
+      <View className="flex-1 w-full items-center pt-2">
         {data?.length === 0 ? (
-          <View
-            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-          >
+          <View className="flex-1 items-center justify-center">
             <Typo>Belum Ada Transaksi</Typo>
           </View>
         ) : isLoading ? (
@@ -136,21 +169,45 @@ const TransactionChart: React.FC<TransactionChartProps> = ({ type }) => {
         ) : (
           <>
             {/* CHART */}
-            <PieChart
-              data={chartData}
-              width={screenWidth - 20}
-              height={220}
-              chartConfig={chartConfig}
-              accessor="total_amount"
-              backgroundColor="transparent"
-              paddingLeft="0"
-              center={[90, 0]}
-              hasLegend={false}
-              absolute
-            />
+            <View className="w-full items-center">
+              {hasChartData ? (
+                <Svg width={chartSize} height={chartSize}>
+                  {chartData.length === 1 ? (
+                    <Circle
+                      cx={center}
+                      cy={center}
+                      r={radius}
+                      fill={chartData[0].color}
+                    />
+                  ) : (
+                    (() => {
+                      let startAngle = 0;
+                      return chartData.map((item, index) => {
+                        const sliceAngle =
+                          (item.population / totalAmount) * 360;
+                        const endAngle = startAngle + sliceAngle;
+                        const d = describeArc(
+                          center,
+                          center,
+                          radius,
+                          startAngle,
+                          endAngle,
+                        );
+                        startAngle = endAngle;
+                        return <Path key={index} d={d} fill={item.color} />;
+                      });
+                    })()
+                  )}
+                </Svg>
+              ) : (
+                <View className="h-60 w-60 items-center justify-center">
+                  <Typo>Chart kosong</Typo>
+                </View>
+              )}
+            </View>
 
             {/* CUSTOM LEGEND (scrollable) */}
-            <View style={styles.legendContainer}>
+            <View className="mt-5 w-full flex-1 rounded-t-2xl bg-white p-5">
               <FlatList
                 data={chartData}
                 keyExtractor={(_, index) => index.toString()}
@@ -158,7 +215,7 @@ const TransactionChart: React.FC<TransactionChartProps> = ({ type }) => {
                   <LegendItem item={item} totalAmount={totalAmount} />
                 )}
                 showsVerticalScrollIndicator={false}
-                contentContainerStyle={{ paddingBottom: 40 }}
+                contentContainerClassName="pb-10"
               />
             </View>
           </>
@@ -167,35 +224,5 @@ const TransactionChart: React.FC<TransactionChartProps> = ({ type }) => {
     </ScreenWrapper>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  legendContainer: {
-    flex: 1,
-    padding: 20,
-    marginTop: 20,
-    width: "100%",
-    backgroundColor: "white",
-    borderTopRightRadius: 15,
-    borderTopLeftRadius: 15,
-  },
-  legendItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 6,
-  },
-  colorBox: {
-    width: 60,
-    height: 40,
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 4,
-    marginRight: 8,
-  },
-});
 
 export default TransactionChart;

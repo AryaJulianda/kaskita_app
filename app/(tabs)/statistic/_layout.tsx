@@ -9,7 +9,7 @@ import { createMaterialTopTabNavigator } from "@react-navigation/material-top-ta
 import { useNavigationState } from "@react-navigation/native";
 import { withLayoutContext } from "expo-router";
 import { useEffect } from "react";
-import { StyleSheet, View } from "react-native";
+import { View } from "react-native";
 
 const TopTabs = createMaterialTopTabNavigator();
 const TopTabsNavigator = withLayoutContext(TopTabs.Navigator);
@@ -33,7 +33,7 @@ export default function TransactionsLayout() {
 
   return (
     <>
-      <View style={styles.header}>
+      <View className="flex-row items-center justify-between bg-white p-2.5">
         {chartType === "MONTHLY" && (
           <MonthPicker value={trxDate} onChange={setTransactionDate} />
         )}
@@ -42,12 +42,13 @@ export default function TransactionsLayout() {
         )}
 
         {/* ✅ Select Input */}
-        <View style={styles.pickerWrapper}>
+        <View className="w-32 overflow-hidden rounded-lg border border-neutral-300">
           <Picker
+            className="p-2 font-bold bg-white"
             selectedValue={chartType}
             onValueChange={(value) => setChartType(value)}
             mode="dropdown"
-            style={styles.picker}
+            style={{ color: colors.black }}
             dropdownIconColor={colors.primary}
           >
             <Picker.Item label="Monthly" value="MONTHLY" />
@@ -77,25 +78,3 @@ export default function TransactionsLayout() {
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  header: {
-    backgroundColor: colors.white,
-    justifyContent: "space-between",
-    flexDirection: "row",
-    alignItems: "center",
-    padding: 10,
-  },
-  pickerWrapper: {
-    width: 130,
-    borderWidth: 1,
-    borderColor: colors.neutral300,
-    borderRadius: 8,
-    overflow: "hidden",
-  },
-  picker: {
-    // height: 40,
-    paddingVertical: 0,
-    color: colors.black,
-  },
-});

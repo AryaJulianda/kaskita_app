@@ -66,7 +66,7 @@ const Monthly = () => {
         </Typo>
       </View>
       <View className="flex-col items-end justify-between">
-        <Typo fontWeight={600} color={colors.green}>
+        <Typo fontWeight={600} size={6} color={colors.green}>
           +
           {new Intl.NumberFormat("id-ID", {
             style: "currency",
@@ -74,7 +74,7 @@ const Monthly = () => {
             minimumFractionDigits: 2,
           }).format(item.income)}
         </Typo>
-        <Typo fontWeight={600} color={colors.rose}>
+        <Typo fontWeight={600} size={6} color={colors.rose}>
           -
           {new Intl.NumberFormat("id-ID", {
             style: "currency",
@@ -82,7 +82,7 @@ const Monthly = () => {
             minimumFractionDigits: 2,
           }).format(item.expense)}
         </Typo>
-        <Typo fontWeight={600} color={colors.blue}>
+        <Typo fontWeight={600} size={6} color={colors.blue}>
           {new Intl.NumberFormat("id-ID", {
             style: "currency",
             currency: "IDR",
@@ -98,7 +98,7 @@ const Monthly = () => {
       {isLoading ? (
         <Loading />
       ) : (
-        <View className="flex-1 items-center">
+        <View className="flex-1">
           {/* Summary Row */}
           <View className="mb-2 mt-2 w-full flex-row items-center justify-between">
             <SummaryItem label="Income" value={income} color={colors.green} />
@@ -109,7 +109,8 @@ const Monthly = () => {
             data={monthlySummaries}
             keyExtractor={(item) => item.month}
             renderItem={renderItem}
-            contentContainerClassName="pb-24 pt-1"
+            className="w-full"
+            contentContainerClassName="w-full pb-24 pt-1"
             refreshControl={
               <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
             }

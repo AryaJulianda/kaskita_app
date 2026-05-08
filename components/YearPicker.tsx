@@ -1,9 +1,10 @@
 import Typo from "@/components/Typo";
 import { colors } from "@/constants/theme";
 import { useMonthlyTransactionStore } from "@/stores/monthlyTransactionStore";
+import { Picker } from "@react-native-picker/picker";
 import { CaretLeftIcon, CaretRightIcon } from "phosphor-react-native";
-import React, { useEffect, useRef, useState } from "react";
-import { Modal, ScrollView, TouchableOpacity, View } from "react-native";
+import React, { useState } from "react";
+import { Modal, TouchableOpacity, View } from "react-native";
 
 type YearPickerProps = {
   value: number;
@@ -20,7 +21,6 @@ export default function YearPicker({
 }: YearPickerProps) {
   const [visible, setVisible] = useState(false);
   const [selectedYear, setSelectedYear] = useState(value);
-  const scrollRef = useRef<ScrollView>(null);
   const { getMonthlySummaries } = useMonthlyTransactionStore();
 
   // Preview bar: prev/next
@@ -48,19 +48,6 @@ export default function YearPicker({
   const years: Array<number> = [];
   for (let y = minYear; y <= maxYear; y++) years.push(y);
 
-  // Scroll ke posisi tahun yang dipilih saat modal dibuka
-  useEffect(() => {
-    if (visible && scrollRef.current) {
-      const selectedIdx = years.indexOf(selectedYear);
-      // Estimasi width item: margin(6)*2 + padding(10)*2 + text(40) ≈ 72px
-      const itemWidth = 72;
-      const scrollToX = Math.max(0, selectedIdx * itemWidth - 150); // 150 agar di tengah modal
-      setTimeout(() => {
-        scrollRef.current?.scrollTo({ x: scrollToX, animated: true });
-      }, 100);
-    }
-  }, [visible, selectedYear, years]);
-
   return (
     <>
       <View className="w-28 flex-row items-center justify-between px-1 py-1">
@@ -84,44 +71,28 @@ export default function YearPicker({
       >
         <View className="flex-1 items-center justify-center bg-black/20">
           <View className="w-72 items-center rounded-xl bg-white p-5">
-            <Typo size={14} fontWeight="bold" style={{ marginBottom: 12 }}>
+            <Typo size={7} fontWeight="bold" style={{ marginBottom: 12 }}>
               Pilih Tahun
             </Typo>
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              ref={scrollRef}
-            >
-              <View className="flex-row">
+            <View className="w-full rounded-md border border-neutral-200">
+              <Picker
+                selectedValue={selectedYear}
+                onValueChange={(value) => setSelectedYear(Number(value))}
+                className="py-2 px-2 font-bold"
+              >
                 {years.map((year) => (
-                  <TouchableOpacity
-                    key={year}
-                    className={
-                      year === selectedYear
-                        ? "m-1.5 rounded-md bg-neutral-900 px-3 py-2"
-                        : "m-1.5 rounded-md bg-neutral-100 px-3 py-2"
-                    }
-                    onPress={() => setSelectedYear(year)}
-                  >
-                    <Typo
-                      color={
-                        year === selectedYear ? colors.white : colors.neutral800
-                      }
-                    >
-                      {year}
-                    </Typo>
-                  </TouchableOpacity>
+                  <Picker.Item key={year} label={`${year}`} value={year} />
                 ))}
-              </View>
-            </ScrollView>
+              </Picker>
+            </View>
             <View className="w-full flex-row items-center justify-between gap-2">
               <TouchableOpacity
                 className="mt-4 w-1/2 rounded-lg bg-neutral-100 px-6 py-2"
                 onPress={() => setVisible(false)}
               >
                 <Typo
-                  size={12}
                   color={colors.neutral800}
+                  fontWeight={"bold"}
                   style={{ textAlign: "center" }}
                 >
                   Tutup
@@ -134,7 +105,6 @@ export default function YearPicker({
                 <Typo
                   color={colors.white}
                   fontWeight="bold"
-                  size={12}
                   style={{ textAlign: "center" }}
                 >
                   Confirm
