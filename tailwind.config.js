@@ -9,7 +9,11 @@ module.exports = {
     "./hooks/**/*.{js,jsx,ts,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        primary: "#262626",
+      },
+    },
   },
   plugins: [],
 };

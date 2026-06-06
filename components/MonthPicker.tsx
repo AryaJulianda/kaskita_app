@@ -4,7 +4,14 @@ import { useTransactionStore } from "@/stores/transactionStore";
 import { Picker } from "@react-native-picker/picker";
 import { CaretLeftIcon, CaretRightIcon } from "phosphor-react-native";
 import React, { useState } from "react";
-import { Modal, TouchableOpacity, View } from "react-native";
+import {
+  ActionSheetIOS,
+  Modal,
+  Platform,
+  Pressable,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 function formatMonthYear(date: Date) {
   const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -76,6 +83,30 @@ export default function MonthPicker({ value, onChange }: MonthPickerProps) {
   const handleSelectMonth = (monthIdx: number) => setSelectedMonth(monthIdx);
   const handleSelectYear = (year: number) => setSelectedYear(year);
 
+  const years = Array.from({ length: 7 }, (_, i) => currentYear - 3 + i);
+
+  const openYearSheet = () => {
+    if (Platform.OS !== "ios") {
+      return;
+    }
+
+    const options = years.map((year) => `${year}`).concat("Cancel");
+    ActionSheetIOS.showActionSheetWithOptions(
+      {
+        options,
+        cancelButtonIndex: options.length - 1,
+        userInterfaceStyle: "light",
+      },
+      (buttonIndex) => {
+        if (buttonIndex == null || buttonIndex >= years.length) {
+          return;
+        }
+
+        handleSelectYear(years[buttonIndex]);
+      },
+    );
+  };
+
   const handleConfirm = () => {
     const newDate = new Date(selectedYear, selectedMonth, 1);
     onChange(formatMonthYear(newDate));
@@ -133,20 +164,26 @@ export default function MonthPicker({ value, onChange }: MonthPickerProps) {
             <Typo size={7} fontWeight="bold" style={{ marginVertical: 12 }}>
               Pilih Tahun
             </Typo>
-            <View className="w-full rounded-md border border-neutral-200">
-              <Picker
-                selectedValue={selectedYear}
-                onValueChange={(value) => handleSelectYear(Number(value))}
-                className="py-2 px-2 font-bold"
+            {Platform.OS === "ios" ? (
+              <Pressable
+                className="w-full rounded-md border border-neutral-200 bg-white px-2 py-2"
+                onPress={openYearSheet}
               >
-                {[...Array(7)].map((_, i) => {
-                  const year = currentYear - 3 + i;
-                  return (
+                <Typo fontWeight="bold">{selectedYear}</Typo>
+              </Pressable>
+            ) : (
+              <View className="w-full rounded-md border border-neutral-200">
+                <Picker
+                  selectedValue={selectedYear}
+                  onValueChange={(value) => handleSelectYear(Number(value))}
+                  className="py-2 px-2 font-bold"
+                >
+                  {years.map((year) => (
                     <Picker.Item key={year} label={`${year}`} value={year} />
-                  );
-                })}
-              </Picker>
-            </View>
+                  ))}
+                </Picker>
+              </View>
+            )}
             <View className="w-full flex-row items-center justify-between gap-2">
               <TouchableOpacity
                 className="mt-4 w-1/2 rounded-lg bg-neutral-100 px-6 py-2"

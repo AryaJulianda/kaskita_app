@@ -9,7 +9,13 @@ import { verticalScale } from "@/utils/styling";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { PlusIcon } from "phosphor-react-native";
 import React, { useCallback, useState } from "react";
-import { FlatList, RefreshControl, TouchableOpacity, View } from "react-native";
+import {
+  FlatList,
+  Platform,
+  RefreshControl,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 type ListItem = AssetType | Saving | Loan;
 
@@ -338,7 +344,14 @@ const Asset = () => {
                       style={{ backgroundColor: colors.primary }}
                     >
                       <Typo color="white">Tambah</Typo>
-                      <PlusIcon color={colors.white} size={verticalScale(8)} />
+                      <PlusIcon
+                        color={colors.white}
+                        size={
+                          Platform.OS === "web"
+                            ? verticalScale(8)
+                            : verticalScale(15)
+                        }
+                      />
                     </TouchableOpacity>
                   }
                 />

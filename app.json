@@ -14,6 +14,13 @@
       "bundleIdentifier": "com.aryajulianda.kaskita-app",
       "googleServicesFile": "./GoogleService-Info.plist",
       "infoPlist": {
+        "CFBundleURLTypes": [
+          {
+            "CFBundleURLSchemes": [
+              "com.googleusercontent.apps.995599594595-cl6n078e5b9a3d4ug867c1qso2gta52e"
+            ]
+          }
+        ],
         "NSMicrophoneUsageDescription": "Kaskita membutuhkan akses mikrofon untuk merekam transaksi suara.",
         "NSPhotoLibraryUsageDescription": "Kaskita membutuhkan akses galeri untuk memilih foto profil dan lampiran.",
         "NSUserTrackingUsageDescription": "Kaskita tidak menggunakan data pelacakan untuk iklan, izin ini hanya untuk kompatibilitas platform jika dibutuhkan."

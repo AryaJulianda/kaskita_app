@@ -1,6 +1,6 @@
 import { colors, fontFamily } from "@/constants/theme";
 import { verticalScale } from "@/utils/styling";
-import { TextInput, View } from "react-native";
+import { Platform, TextInput, View } from "react-native";
 import Typo from "./Typo";
 
 export const InputField = ({
@@ -37,7 +37,8 @@ export const InputField = ({
         <TextInput
           className="px-4 py-2"
           style={{
-            fontSize: verticalScale(7),
+            fontSize:
+              Platform.OS === "web" ? verticalScale(7) : verticalScale(13),
             fontFamily: fontFamily("normal"),
             color: colors.textLight,
           }}
@@ -51,7 +52,8 @@ export const InputField = ({
         <TextInput
           className="px-4 py-2"
           style={{
-            fontSize: verticalScale(7),
+            fontSize:
+              Platform.OS === "web" ? verticalScale(7) : verticalScale(13),
             fontFamily: fontFamily("normal"),
             color: colors.textLight,
             height: multiline ? 100 : undefined,

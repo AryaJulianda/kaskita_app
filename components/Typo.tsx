@@ -2,7 +2,7 @@ import { colors, fontFamily } from "@/constants/theme";
 import { TypoProps } from "@/types";
 import { verticalScale } from "@/utils/styling";
 import React from "react";
-import { Text, TextStyle } from "react-native";
+import { Platform, Text, TextStyle } from "react-native";
 
 const Typo = ({
   size,
@@ -15,8 +15,11 @@ const Typo = ({
 }: TypoProps) => {
   // mapping fontWeight ke Inter
 
+  const baseSize = size ?? 7;
+  const adjustedSize = Platform.OS === "web" ? baseSize : baseSize + 6;
+
   const textStyle: TextStyle = {
-    fontSize: size ? verticalScale(size) : verticalScale(7),
+    fontSize: verticalScale(adjustedSize),
     color,
     fontFamily: fontFamily(fontWeight),
   };

@@ -4,7 +4,14 @@ import { useMonthlyTransactionStore } from "@/stores/monthlyTransactionStore";
 import { Picker } from "@react-native-picker/picker";
 import { CaretLeftIcon, CaretRightIcon } from "phosphor-react-native";
 import React, { useState } from "react";
-import { Modal, TouchableOpacity, View } from "react-native";
+import {
+  ActionSheetIOS,
+  Modal,
+  Platform,
+  Pressable,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 type YearPickerProps = {
   value: number;
@@ -48,6 +55,28 @@ export default function YearPicker({
   const years: Array<number> = [];
   for (let y = minYear; y <= maxYear; y++) years.push(y);
 
+  const openYearSheet = () => {
+    if (Platform.OS !== "ios") {
+      return;
+    }
+
+    const options = years.map((year) => `${year}`).concat("Cancel");
+    ActionSheetIOS.showActionSheetWithOptions(
+      {
+        options,
+        cancelButtonIndex: options.length - 1,
+        userInterfaceStyle: "light",
+      },
+      (buttonIndex) => {
+        if (buttonIndex == null || buttonIndex >= years.length) {
+          return;
+        }
+
+        setSelectedYear(years[buttonIndex]);
+      },
+    );
+  };
+
   return (
     <>
       <View className="w-28 flex-row items-center justify-between px-1 py-1">
@@ -74,17 +103,26 @@ export default function YearPicker({
             <Typo size={7} fontWeight="bold" style={{ marginBottom: 12 }}>
               Pilih Tahun
             </Typo>
-            <View className="w-full rounded-md border border-neutral-200">
-              <Picker
-                selectedValue={selectedYear}
-                onValueChange={(value) => setSelectedYear(Number(value))}
-                className="py-2 px-2 font-bold"
+            {Platform.OS === "ios" ? (
+              <Pressable
+                className="w-full rounded-md border border-neutral-200 bg-white px-2 py-2"
+                onPress={openYearSheet}
               >
-                {years.map((year) => (
-                  <Picker.Item key={year} label={`${year}`} value={year} />
-                ))}
-              </Picker>
-            </View>
+                <Typo fontWeight="bold">{selectedYear}</Typo>
+              </Pressable>
+            ) : (
+              <View className="w-full rounded-md border border-neutral-200">
+                <Picker
+                  selectedValue={selectedYear}
+                  onValueChange={(value) => setSelectedYear(Number(value))}
+                  className="py-2 px-2 font-bold"
+                >
+                  {years.map((year) => (
+                    <Picker.Item key={year} label={`${year}`} value={year} />
+                  ))}
+                </Picker>
+              </View>
+            )}
             <View className="w-full flex-row items-center justify-between gap-2">
               <TouchableOpacity
                 className="mt-4 w-1/2 rounded-lg bg-neutral-100 px-6 py-2"

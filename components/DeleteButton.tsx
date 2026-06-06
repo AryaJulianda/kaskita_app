@@ -2,11 +2,11 @@ import { colors } from "@/constants/theme";
 import { verticalScale } from "@/utils/styling";
 import { TrashIcon } from "phosphor-react-native";
 import React from "react";
-import { TouchableOpacity, ViewStyle } from "react-native";
+import { Platform, TouchableOpacity, ViewStyle } from "react-native";
 
 const DeleteIcon = ({
   style,
-  iconSize = 14,
+  iconSize = Platform.OS === "web" ? 22 : 24,
   onPress,
 }: {
   style?: ViewStyle;

@@ -9,7 +9,7 @@ import { createMaterialTopTabNavigator } from "@react-navigation/material-top-ta
 import { useNavigationState } from "@react-navigation/native";
 import { withLayoutContext } from "expo-router";
 import { useEffect } from "react";
-import { View } from "react-native";
+import { ActionSheetIOS, Platform, Pressable, Text, View } from "react-native";
 
 const TopTabs = createMaterialTopTabNavigator();
 const TopTabsNavigator = withLayoutContext(TopTabs.Navigator);
@@ -31,6 +31,25 @@ export default function TransactionsLayout() {
     console.log("Active Tab:", activeTab);
   }, [activeTab]);
 
+  const chartTypeLabel = chartType === "YEARLY" ? "Yearly" : "Monthly";
+
+  const openChartTypeSheet = () => {
+    ActionSheetIOS.showActionSheetWithOptions(
+      {
+        options: ["Monthly", "Yearly", "Cancel"],
+        cancelButtonIndex: 2,
+        userInterfaceStyle: "light",
+      },
+      (buttonIndex) => {
+        if (buttonIndex === 0) {
+          setChartType("MONTHLY");
+        } else if (buttonIndex === 1) {
+          setChartType("YEARLY");
+        }
+      },
+    );
+  };
+
   return (
     <>
       <View className="flex-row items-center justify-between bg-white p-2.5">
@@ -42,19 +61,37 @@ export default function TransactionsLayout() {
         )}
 
         {/* ✅ Select Input */}
-        <View className="w-32 overflow-hidden rounded-lg border border-neutral-300">
-          <Picker
-            className="p-2 font-bold bg-white"
-            selectedValue={chartType}
-            onValueChange={(value) => setChartType(value)}
-            mode="dropdown"
-            style={{ color: colors.black }}
-            dropdownIconColor={colors.primary}
+        {Platform.OS === "ios" ? (
+          <Pressable
+            className="w-32 rounded-lg border border-neutral-300 bg-white"
+            onPress={openChartTypeSheet}
           >
-            <Picker.Item label="Monthly" value="MONTHLY" />
-            <Picker.Item label="Yearly" value="YEARLY" />
-          </Picker>
-        </View>
+            <Text
+              className="p-2"
+              style={{
+                color: colors.black,
+                fontFamily: fontFamily(600),
+                textAlign: "center",
+              }}
+            >
+              {chartTypeLabel}
+            </Text>
+          </Pressable>
+        ) : (
+          <View className="w-32 overflow-hidden rounded-lg border border-neutral-300">
+            <Picker
+              className="p-2 font-bold bg-white"
+              selectedValue={chartType}
+              onValueChange={(value) => setChartType(value)}
+              mode="dropdown"
+              style={{ color: colors.black }}
+              dropdownIconColor={colors.primary}
+            >
+              <Picker.Item label="Monthly" value="MONTHLY" />
+              <Picker.Item label="Yearly" value="YEARLY" />
+            </Picker>
+          </View>
+        )}
       </View>
 
       <TopTabsNavigator

@@ -10,7 +10,7 @@ import { verticalScale } from "@/utils/styling";
 import { useRouter } from "expo-router";
 import { PlusCircleIcon } from "phosphor-react-native";
 import React, { useEffect, useState } from "react";
-import { FlatList, RefreshControl, TouchableOpacity, View } from "react-native";
+import { FlatList, Platform, RefreshControl, TouchableOpacity, View } from "react-native";
 
 const frequencyLabelMap = {
   MONTHLY: "Bulanan",
@@ -115,7 +115,9 @@ const index = () => {
             <PlusCircleIcon
               weight="fill"
               color={colors.primary}
-              size={verticalScale(33)}
+              size={
+                Platform.OS === "web" ? verticalScale(22) : verticalScale(34)
+              }
             />
           </TouchableOpacity>
         }
@@ -142,21 +144,17 @@ const index = () => {
               return (
                 <View className="mb-2.5 flex-row items-stretch overflow-hidden rounded-lg border border-neutral-200 bg-white shadow">
                   <TouchableOpacity
-                    className="flex-1 gap-2.5 p-2.5"
+                    className="flex-1 gap-2.5 p-2.5 w-full"
                     onPress={async () => {
                       await setDetailRoutineTransaction(item);
                       router.push(`/routineTransactionModal/edit`);
                     }}
                   >
-                    <View className="flex-row items-start justify-between gap-2.5">
-                      <Typo size={14} fontWeight="600" className="flex-1">
+                    <View className="flex-row justify-between gap-3">
+                      <Typo fontWeight="600" className="flex-1">
                         {item.note || "Tanpa catatan"}
                       </Typo>
-                      <Typo
-                        size={14}
-                        fontWeight="700"
-                        color={colors.primaryDark}
-                      >
+                      <Typo fontWeight="700" color={colors.primaryDark}>
                         {formatCurrency(item.amount)}
                       </Typo>
                     </View>
@@ -164,7 +162,7 @@ const index = () => {
                     <View className="flex-row flex-wrap gap-2">
                       <View className="rounded-full bg-neutral-100 px-2.5 py-1">
                         <Typo
-                          size={11}
+                          size={6}
                           color={colors.neutral700}
                           fontWeight="500"
                         >
@@ -173,7 +171,7 @@ const index = () => {
                       </View>
                       <View className="rounded-full bg-neutral-100 px-2.5 py-1">
                         <Typo
-                          size={11}
+                          size={6}
                           color={colors.neutral700}
                           fontWeight="500"
                         >
@@ -182,7 +180,7 @@ const index = () => {
                       </View>
                     </View>
 
-                    <Typo size={11} color={colors.neutral500}>
+                    <Typo size={6} color={colors.neutral500}>
                       Terakhir dicatat:{" "}
                       {formatLastGeneratedAt(item.last_generated_at)}
                     </Typo>
@@ -195,8 +193,7 @@ const index = () => {
                     disabled={isGenerateDisabled}
                   >
                     <Typo
-                      size={12}
-                      color={colors.white}
+                      color={colors.text}
                       fontWeight="600"
                       className="text-center"
                     >

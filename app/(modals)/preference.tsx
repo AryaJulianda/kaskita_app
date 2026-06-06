@@ -18,6 +18,7 @@ import React, { useCallback, useState } from "react";
 import {
   Alert,
   Modal,
+  Platform,
   TouchableOpacity,
   TouchableWithoutFeedback,
   View,
@@ -40,12 +41,12 @@ const preference = () => {
       title: "Transaction Category",
       icon: <NotepadIcon size={26} color={colors.white} weight="fill" />,
       routeName: "/transactionCategoryModal",
-      bgColor: "#6366f1",
+      bgColor: colors.primary,
     },
     {
       title: "Tanggal Tutup Buku",
       icon: <CalendarDotsIcon size={26} color={colors.white} weight="fill" />,
-      bgColor: "#6366f1",
+      bgColor: colors.primary,
       value: settings.closing_date ?? 1,
       onPress: () => setEditClosingDateModal(true),
     },
@@ -105,8 +106,14 @@ const preference = () => {
                   <View
                     className="items-center justify-center rounded-2xl"
                     style={{
-                      height: verticalScale(22),
-                      width: verticalScale(22),
+                      height:
+                        Platform.OS === "web"
+                          ? verticalScale(22)
+                          : verticalScale(34),
+                      width:
+                        Platform.OS === "web"
+                          ? verticalScale(22)
+                          : verticalScale(34),
                       backgroundColor: item?.bgColor ?? colors.neutral500,
                     }}
                   >
@@ -120,7 +127,11 @@ const preference = () => {
 
                   {!item.value ? (
                     <CaretRightIcon
-                      size={verticalScale(12)}
+                      size={
+                        Platform.OS === "web"
+                          ? verticalScale(12)
+                          : verticalScale(16)
+                      }
                       weight="bold"
                       color={colors.primary}
                     />

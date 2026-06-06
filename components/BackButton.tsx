@@ -6,7 +6,7 @@ import { CaretLeftIcon } from "phosphor-react-native";
 import React from "react";
 import { TouchableOpacity } from "react-native";
 
-const BackButton = ({ style, iconSize = 14, path }: BackButtonProps) => {
+const BackButton = ({ style, iconSize = 20, path }: BackButtonProps) => {
   const router = useRouter();
   return (
     <TouchableOpacity

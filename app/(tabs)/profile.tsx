@@ -17,7 +17,13 @@ import {
   UserIcon,
 } from "phosphor-react-native";
 import React, { useCallback } from "react";
-import { Alert, ScrollView, TouchableOpacity, View } from "react-native";
+import {
+  Alert,
+  Platform,
+  ScrollView,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 
 const Profile = () => {
@@ -155,8 +161,14 @@ const Profile = () => {
                     className="items-center justify-center rounded-xl"
                     style={{
                       backgroundColor: item?.bgColor,
-                      height: verticalScale(24),
-                      width: verticalScale(24),
+                      height:
+                        Platform.OS === "web"
+                          ? verticalScale(24)
+                          : verticalScale(34),
+                      width:
+                        Platform.OS === "web"
+                          ? verticalScale(24)
+                          : verticalScale(34),
                     }}
                   >
                     {item.icon && item.icon}

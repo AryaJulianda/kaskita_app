@@ -263,7 +263,9 @@ const BudgetForm: React.FC<{
                   onChangeText={handleChangeTemp}
                 />
                 <Button onPress={submitBase}>
-                  <Typo>Save</Typo>
+                  <Typo color={colors.text} fontWeight={"bold"}>
+                    Save
+                  </Typo>
                 </Button>
               </View>
             </TouchableWithoutFeedback>
@@ -284,7 +286,9 @@ const BudgetForm: React.FC<{
                   onChangeText={handleChangeTemp}
                 />
                 <Button onPress={submitMonthly}>
-                  <Typo color={colors.primary}>Save</Typo>
+                  <Typo color={colors.text} fontWeight={"bold"}>
+                    Save
+                  </Typo>
                 </Button>
               </View>
             </TouchableWithoutFeedback>
