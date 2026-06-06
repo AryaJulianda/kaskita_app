@@ -1,0 +1,12 @@
+.git
+.gitignore
+.expo
+.idea
+.vscode
+node_modules
+dist
+android
+ios
+dev-*.apk
+*.log
+coverage

@@ -48,3 +48,27 @@ Join our community of developers creating universal apps.
 
 - [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
 - [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+
+## Docker Web Deploy
+
+This app is set up for Expo static web export, so it can be deployed to a VPS with Docker.
+
+### Build the image
+
+```bash
+docker build -t kaskita-app-web .
+```
+
+### Run with Compose
+
+```bash
+docker compose up -d --build
+```
+
+By default, the web app will be exposed on port `8080`.
+
+### VPS notes
+
+- Point your domain or reverse proxy to port `8080`.
+- Keep SPA fallback enabled with `try_files $uri $uri/ /index.html;`.
+- Add your VPS domain to Firebase Authorized Domains if you use Firebase Auth.
